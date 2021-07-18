@@ -1,0 +1,20 @@
+{
+  "name": "eaglezzzzz/clean-code-php",
+  "description": "Exercises from the Robert Martin book \"Clean code\" translated into PHP.",
+  "type": "project",
+  "license": "GNU GPL",
+  "authors": [
+    {
+      "name": "Anton Orlov",
+      "email": "eaglecrazy@mail.ru"
+    }
+  ],
+  "require-dev": {
+    "phpunit/phpunit": "8.5.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "CleanCode\\": ""
+    }
+  }
+}
