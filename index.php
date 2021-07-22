@@ -2,22 +2,29 @@
 
 /**
  * Clean code. Chapter 14 - "Successive refinement".
- * Args first version. Working with logical arguments only.
+ * Args second version. Added string type arguments.
  */
 
 namespace CleanCode;
 
+use Exception;
+
 require 'vendor/autoload.php';
 
 try {
-    $args = ['-l'];
+    //Unfortunately uncle Bob did not specify the format of the arguments in the book, so i use this format.
+    $args = ['-l', '-d/tmp'];
 
-    $arg = new Args("l", $args);
+    $schema = 'l,d*';
 
+    $arg = new Args($schema, $args);
+
+    $directory = $arg->getString('d');
     $logging = $arg->getBool('l');
+    $port = 80;
 
-    executeApplication($logging);
-} catch (ArgsException $e) {
+    executeApplication($logging, $port, $directory);
+} catch (Exception $e) {
     echo 'Argument error: ' . $e->getMessage();
 }
 
@@ -30,5 +37,7 @@ try {
  */
 function executeApplication(bool $logging = true, int $port = 0, string $directory = '/tmp'): void
 {
-    echo 'logging = ' . ($logging ? 'true' : 'false');
+    echo 'logging = ' . ($logging ? 'true' : 'false') . PHP_EOL;
+    echo 'port = ' . $port . PHP_EOL;
+    echo 'directory = ' . $directory . PHP_EOL;
 }

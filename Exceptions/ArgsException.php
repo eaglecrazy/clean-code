@@ -1,6 +1,6 @@
 <?php
 
-namespace CleanCode;
+namespace CleanCode\Exceptions;
 
 use Exception;
 
