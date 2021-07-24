@@ -6,6 +6,7 @@ use CleanCode\ArgumentMarshaler\BooleanArgumentMarshaler;
 use CleanCode\ArgumentMarshaler\IntegerArgumentMarshaler;
 use CleanCode\ArgumentMarshaler\StringArgumentMarshaler;
 use CleanCode\Exceptions\ArgsException;
+use CleanCode\Exceptions\NumberFormatException;
 use CleanCode\Exceptions\ParseException;
 use Exception;
 
@@ -284,18 +285,18 @@ class Args
 
         $int = substr($arg, 2);
 
-        if (!ctype_digit($int)) {
-            $this->errorArgument = $arg;
-            $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::INVALID_INTEGER(), $arg);
-            throw new ArgsException();
-        }
-
         $key = $argId . self::INTEGER_KEY_END;
 
         /** @var IntegerArgumentMarshaler $integerMarshaler */
         $integerMarshaler = $this->intArgs[$key];
 
-        $integerMarshaler->setInteger($int);
+        try{
+            $integerMarshaler->set($int);
+        } catch (NumberFormatException $e){
+            $this->errorArgument = $arg;
+            $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::INVALID_INTEGER(), $arg);
+            throw new ArgsException();
+        }
     }
 
     /**
@@ -463,7 +464,7 @@ class Args
         /** @var IntegerArgumentMarshaler $am */
         $am = $this->intArgs[$key] ?? null;
 
-        return $am ? $am->getInteger() : 0;
+        return $am ? $am->get() : 0;
     }
 
     /**

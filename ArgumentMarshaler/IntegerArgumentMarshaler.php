@@ -3,15 +3,23 @@
 namespace CleanCode\ArgumentMarshaler;
 
 use CleanCode\ArgumentMarshaler;
+use CleanCode\Exceptions\NumberFormatException;
 
 class IntegerArgumentMarshaler extends ArgumentMarshaler
 {
+    private int $integerValue = 0;
+
     /**
      * @inheritDoc
+     * @throws NumberFormatException
      */
     public function set(string $s): void
     {
-        // TODO: Implement set() method.
+        if (!ctype_digit($s)) {
+            throw new NumberFormatException();
+        }
+
+        $this->integerValue = $s;
     }
 
     /**
@@ -19,6 +27,6 @@ class IntegerArgumentMarshaler extends ArgumentMarshaler
      */
     public function get()
     {
-        // TODO: Implement get() method.
+        return $this->integerValue;
     }
 }
