@@ -24,9 +24,7 @@ class Args
     private array $args;
     private bool $valid = true;
     private array $unexpectedArguments = [];
-    private array $booleanArgs = [];
-    private array $stringArgs = [];
-    private array $intArgs = [];
+    private array $marshalers = [];
     private array $argsFound = [];
     private string $errorArgument = '\0';
     private array $argumentsParseErrors = [];
@@ -128,7 +126,7 @@ class Args
      */
     private function parseBooleanSchemaElement(string $elementId): void
     {
-        $this->booleanArgs[$elementId] = new BooleanArgumentMarshaler();
+        $this->marshalers[$elementId] = new BooleanArgumentMarshaler();
     }
 
     /**
@@ -138,7 +136,7 @@ class Args
      */
     private function parseIntegerSchemaElement(string $elementId): void
     {
-        $this->intArgs[$elementId] = new IntegerArgumentMarshaler();
+        $this->marshalers[$elementId] = new IntegerArgumentMarshaler();
     }
 
     /**
@@ -148,7 +146,7 @@ class Args
      */
     private function parseStringSchemaElement(string $elementId): void
     {
-        $this->stringArgs[$elementId] = new StringArgumentMarshaler();
+        $this->marshalers[$elementId] = new StringArgumentMarshaler();
     }
 
     /**
@@ -265,7 +263,9 @@ class Args
     {
         $key = $intType . self::INTEGER_KEY_END;
 
-        return array_key_exists($key, $this->intArgs);
+        $marshaler = $this->marshalers[$key] ?? null;
+
+        return ($marshaler instanceof IntegerArgumentMarshaler);
     }
 
     /**
@@ -288,7 +288,7 @@ class Args
         $key = $argId . self::INTEGER_KEY_END;
 
         /** @var IntegerArgumentMarshaler $integerMarshaler */
-        $integerMarshaler = $this->intArgs[$key];
+        $integerMarshaler = $this->marshalers[$key];
 
         try{
             $integerMarshaler->set($int);
@@ -319,7 +319,7 @@ class Args
         $key = $argId . self::STRING_KEY_END;
 
         /** @var StringArgumentMarshaler $stringMarshaler */
-        $stringMarshaler = $this->stringArgs[$key];
+        $stringMarshaler = $this->marshalers[$key];
 
         $stringMarshaler->set($str);
     }
@@ -334,7 +334,9 @@ class Args
     {
         $key = $stringType . self::STRING_KEY_END;
 
-        return array_key_exists($key, $this->stringArgs);
+        $marshaler = $this->marshalers[$key] ?? null;
+
+        return ($marshaler instanceof StringArgumentMarshaler);
     }
 
     /**
@@ -345,7 +347,7 @@ class Args
     private function setBooleanArg(string $key): void
     {
         /** @var BooleanArgumentMarshaler $booleanMarshaler */
-        $booleanMarshaler = $this->booleanArgs[$key];
+        $booleanMarshaler = $this->marshalers[$key];
 
         $booleanMarshaler->set('true');
     }
@@ -353,12 +355,14 @@ class Args
     /**
      * Determine if there is such a boolean element in the schema.
      *
-     * @param string $argId
+     * @param string $booleanType
      * @return bool
      */
-    private function isBooleanArg(string $argId): bool
+    private function isBooleanArg(string $booleanType): bool
     {
-        return array_key_exists($argId, $this->booleanArgs);
+        $marshaler = $this->marshalers[$booleanType] ?? null;
+
+        return ($marshaler instanceof BooleanArgumentMarshaler);
     }
 
     /**
@@ -430,7 +434,7 @@ class Args
     public function getBoolean(string $key): bool
     {
         /** @var BooleanArgumentMarshaler $am */
-        $am = $this->booleanArgs[$key] ?? null;
+        $am = $this->marshalers[$key] ?? null;
 
         return $am ? $am->get() : false;
     }
@@ -446,7 +450,7 @@ class Args
         $key = $id . self::STRING_KEY_END;
 
         /** @var StringArgumentMarshaler $am */
-        $am = $this->stringArgs[$key] ?? null;
+        $am = $this->marshalers[$key] ?? null;
 
         return $am ? $am->get() : '';
     }
@@ -462,7 +466,7 @@ class Args
         $key = $id . self::INTEGER_KEY_END;
 
         /** @var IntegerArgumentMarshaler $am */
-        $am = $this->intArgs[$key] ?? null;
+        $am = $this->marshalers[$key] ?? null;
 
         return $am ? $am->get() : 0;
     }
