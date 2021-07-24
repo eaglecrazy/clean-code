@@ -3,6 +3,7 @@
 namespace CleanCode;
 
 use CleanCode\ArgumentMarshaler\BooleanArgumentMarshaler;
+use CleanCode\ArgumentMarshaler\IntegerArgumentMarshaler;
 use CleanCode\ArgumentMarshaler\StringArgumentMarshaler;
 use CleanCode\Exceptions\ArgsException;
 use CleanCode\Exceptions\ParseException;
@@ -136,7 +137,7 @@ class Args
      */
     private function parseIntegerSchemaElement(string $elementId): void
     {
-        $this->intArgs[$elementId] = 0;
+        $this->intArgs[$elementId] = new IntegerArgumentMarshaler();
     }
 
     /**
@@ -291,7 +292,10 @@ class Args
 
         $key = $argId . self::INTEGER_KEY_END;
 
-        $this->intArgs[$key] = $int;
+        /** @var IntegerArgumentMarshaler $integerMarshaler */
+        $integerMarshaler = $this->intArgs[$key];
+
+        $integerMarshaler->setInteger($int);
     }
 
     /**
@@ -456,7 +460,10 @@ class Args
     {
         $key = $id . self::INTEGER_KEY_END;
 
-        return $this->intArgs[$key] ?? null;
+        /** @var IntegerArgumentMarshaler $am */
+        $am = $this->intArgs[$key] ?? null;
+
+        return $am ? $am->getInteger() : 0;
     }
 
     /**
