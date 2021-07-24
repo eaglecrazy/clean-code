@@ -2,7 +2,8 @@
 
 /**
  * Clean code. Chapter 14 - "Successive refinement".
- * Args second version. Added string type arguments.
+ * Args third version. Added integer type arguments.
+ * Args class covered with tests.
  */
 
 namespace CleanCode;
@@ -13,15 +14,15 @@ require 'vendor/autoload.php';
 
 try {
     //Unfortunately uncle Bob did not specify the format of the arguments in the book, so i use this format.
-    $args = ['-l', '-d/tmp'];
+    $args = ['-l', '-p80', '-d/tmp'];
 
-    $schema = 'l,d*';
+    $schema = 'l,p#,d*';
 
     $arg = new Args($schema, $args);
 
     $directory = $arg->getString('d');
     $logging = $arg->getBool('l');
-    $port = 80;
+    $port = $arg->getInt('p');
 
     executeApplication($logging, $port, $directory);
 } catch (Exception $e) {

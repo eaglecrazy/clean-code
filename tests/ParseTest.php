@@ -1,6 +1,7 @@
 <?php
 
 use CleanCode\Args;
+use CleanCode\Exceptions\ParseException;
 use PHPUnit\Framework\TestCase;
 
 class ParseTest extends TestCase
@@ -15,9 +16,11 @@ class ParseTest extends TestCase
 
         self::assertEquals(true, $arg->getBool('l'));
         self::assertEquals('', $arg->getString('d'));
+        self::assertEquals(null, $arg->getInt('p'));
 
         self::assertEquals(true, $arg->has('-l'));
         self::assertEquals(false, $arg->has('-d'));
+        self::assertEquals(false, $arg->has('-p'));
     }
 
     public function testParseString()
@@ -30,24 +33,57 @@ class ParseTest extends TestCase
 
         self::assertEquals(false, $arg->getBool('l'));
         self::assertEquals('/tmp', $arg->getString('d'));
+        self::assertEquals(null, $arg->getInt('p'));
 
         self::assertEquals(false, $arg->has('-l'));
         self::assertEquals(true, $arg->has('-d/tmp'));
+        self::assertEquals(false, $arg->has('-p'));
     }
 
-    public function testParseBoolAndString()
+    public function testParseInt()
     {
-        $arg = new Args('l,d*', ['-l', '-d/tmp']);
+        $arg = new Args('p#', ['-p80']);
 
         self::assertEquals(true, $arg->isValid());
-        self::assertEquals(2, $arg->cardinality());
+        self::assertEquals(1, $arg->cardinality());
+        self::assertEquals('', $arg->errorMessage());
+
+        self::assertEquals(false, $arg->getBool('l'));
+        self::assertEquals('', $arg->getString('d'));
+        self::assertEquals(80, $arg->getInt('p'));
+
+        self::assertEquals(false, $arg->has('-l'));
+        self::assertEquals(false, $arg->has('-d/tmp'));
+        self::assertEquals(true, $arg->has('-p80'));
+    }
+
+    public function testParseBoolStringAndInt()
+    {
+        $arg = new Args('l,d*,p#', ['-l', '-d/tmp', '-p80']);
+
+        self::assertEquals(true, $arg->isValid());
+        self::assertEquals(3, $arg->cardinality());
         self::assertEquals('', $arg->errorMessage());
 
         self::assertEquals(true, $arg->getBool('l'));
         self::assertEquals('/tmp', $arg->getString('d'));
+        self::assertEquals(80, $arg->getInt('p'));
 
         self::assertEquals(true, $arg->has('-l'));
         self::assertEquals(true, $arg->has('-d/tmp'));
+        self::assertEquals(true, $arg->has('-p80'));
+    }
+
+    public function testParseUnknownElement()
+    {
+        self::expectException(ParseException::class);
+        new Args('l?', ['-l']);
+    }
+
+    public function testParseBadCharacter()
+    {
+        self::expectException(ParseException::class);
+        new Args('??', ['-l']);
     }
 }
 

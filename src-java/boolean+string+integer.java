@@ -143,6 +143,7 @@ public class Args {
     return intArgs.containsKey(argChar);
   }
 
+
   private void setIntArg(char argChar) throws ArgsException {
     currentArgument++;
     String parameter = null;
@@ -186,10 +187,11 @@ public class Args {
   private boolean isBooleanArg(char argChar) {
     return booleanArgs.containsKey(argChar);
   }
-
+//
   public int cardinality() {
     return argsFound.size();
   }
+ //
   public String usage() {
     if (schema.length() > 0)
       return "-[" + schema + "]";

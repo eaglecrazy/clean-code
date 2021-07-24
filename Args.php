@@ -2,6 +2,7 @@
 
 namespace CleanCode;
 
+use CleanCode\Exceptions\ArgsException;
 use CleanCode\Exceptions\ParseException;
 use Exception;
 
@@ -13,6 +14,7 @@ use Exception;
 class Args
 {
     private const STRING_KEY_END = '*';
+    private const INTEGER_KEY_END = '#';
 
     private string $schema;
     private array $args;
@@ -20,9 +22,10 @@ class Args
     private array $unexpectedArguments = [];
     private array $booleanArgs = [];
     private array $stringArgs = [];
+    private array $intArgs = [];
     private array $argsFound = [];
     private string $errorArgument = '\0';
-    private string $errorCode;
+    private array $argumentsParseErrors = [];
 
     /**
      * @param string $schema
@@ -31,8 +34,6 @@ class Args
      */
     public function __construct(string $schema, array $args)
     {
-        $this->errorCode = ErrorCodeEnum::OK();
-
         $this->schema = $schema;
         $this->args = $args;
         $this->valid = $this->parse();
@@ -51,7 +52,12 @@ class Args
         }
 
         $this->parseSchema();
-        $this->parseArguments();
+
+        try {
+            $this->parseArguments();
+        } catch (ArgsException $e) {
+            $this->valid = false;
+        }
 
         return $this->valid;
     }
@@ -88,9 +94,11 @@ class Args
         $this->validateSchemaElementId($elementId);
 
         if ($this->isBooleanSchemaElement($elementTail)) {
-            $this->parseBoolSchemaElement($element);
+            $this->parseBooleanSchemaElement($element);
         } else if ($this->isStringSchemaElement($elementTail)) {
             $this->parseStringSchemaElement($element);
+        } else if ($this->isIntegerSchemaElement($elementTail)) {
+            $this->parseIntegerSchemaElement($element);
         } else {
             throw new ParseException("Unknown element:" . $elementId . " in schema: " . $this->schema, 0);
         }
@@ -107,6 +115,26 @@ class Args
         if (!ctype_alpha($elementId)) {
             throw new ParseException("Bad character:" . $elementId . " in schema: " . $this->schema, 0);
         }
+    }
+
+    /**
+     * Create storage for boolean element.
+     *
+     * @param string $elementId
+     */
+    private function parseBooleanSchemaElement(string $elementId): void
+    {
+        $this->booleanArgs[$elementId] = false;
+    }
+
+    /**
+     * Create storage for integer element.
+     *
+     * @param string $elementId
+     */
+    private function parseIntegerSchemaElement(string $elementId): void
+    {
+        $this->intArgs[$elementId] = 0;
     }
 
     /**
@@ -142,17 +170,20 @@ class Args
     }
 
     /**
-     * Create storage for boolean element.
+     * Determine if it is a integer element.
      *
-     * @param string $elementId
+     * @param string $elementTail
+     * @return bool
      */
-    private function parseBoolSchemaElement(string $elementId): void
+    private function isIntegerSchemaElement(string $elementTail): bool
     {
-        $this->booleanArgs[$elementId] = false;
+        return $elementTail === self::INTEGER_KEY_END;
     }
 
     /**
      * Analyze the arguments.
+     *
+     * @throws ArgsException
      */
     private function parseArguments(): void
     {
@@ -165,6 +196,7 @@ class Args
      * Analyze the argument.
      *
      * @param string $arg
+     * @throws ArgsException
      */
     private function parseArgument(string $arg): void
     {
@@ -172,7 +204,8 @@ class Args
             $this->parseElement($arg);
         } else {
             $this->unexpectedArguments[] = $arg;
-            $this->valid = false;
+            $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::UNEXPECTED_ARGUMENT(), $arg);
+            throw new ArgsException();
         }
     }
 
@@ -180,6 +213,7 @@ class Args
      * Analyze element.
      *
      * @param string $arg
+     * @throws ArgsException
      */
     private function parseElement(string $arg): void
     {
@@ -187,7 +221,8 @@ class Args
             $this->argsFound[] = $arg;
         } else {
             $this->unexpectedArguments[] = $arg;
-            $this->valid = false;
+            $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::UNEXPECTED_ARGUMENT(), $arg);
+            throw new ArgsException();
         }
     }
 
@@ -196,23 +231,65 @@ class Args
      *
      * @param string $arg
      * @return bool
+     * @throws ArgsException
      */
     private function setArgument(string $arg): bool
     {
-        $set = true;
-
         $argType = substr($arg, 1, 1);
 
-        if ($this->isBoolean($argType)) {
+        if ($this->isBooleanArg($argType)) {
             //If a boolean argument was specified, then it is true.
             $this->setBooleanArg($argType);
-        } else if ($this->isString($argType)) {
+        } else if ($this->isStringArg($argType)) {
             $this->setStringArg($argType, $arg);
+        } else if ($this->isIntArg($argType)) {
+            $this->setIntArg($argType, $arg);
         } else {
-            $set = false;
+            return false;
         }
 
-        return $set;
+        return true;
+    }
+
+    /**
+     * Determine if there is such a integer element in the schema.
+     *
+     * @param string $intType
+     * @return bool
+     */
+    private function isIntArg(string $intType): bool
+    {
+        $key = $intType . self::INTEGER_KEY_END;
+
+        return array_key_exists($key, $this->intArgs);
+    }
+
+    /**
+     * Set integer argument.
+     *
+     * @param string $argId
+     * @param string $arg
+     * @throws ArgsException
+     */
+    private function setIntArg(string $argId, string $arg): void
+    {
+        $int = substr($arg, 2);
+
+        if ('-' . $argId === $arg) {
+            $this->errorArgument = $arg;
+            $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::MISSING_INTEGER(), $arg);
+            throw new ArgsException();
+        };
+
+        if (!ctype_digit($int)) {
+            $this->errorArgument = $arg;
+            $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::INVALID_INTEGER(), $arg);
+            throw new ArgsException();
+        }
+
+        $key = $argId . self::INTEGER_KEY_END;
+
+        $this->intArgs[$key] = $int;
     }
 
     /**
@@ -220,6 +297,7 @@ class Args
      *
      * @param string $argId
      * @param string $arg
+     * @throws ArgsException
      */
     private function setStringArg(string $argId, string $arg): void
     {
@@ -227,13 +305,13 @@ class Args
 
         $key = $argId . self::STRING_KEY_END;
 
-        try {
-            $this->stringArgs[$key] = $str;
-        } catch (Exception $e) {
-            $this->valid = false;
-            $this->errorArgument = $arg;
-            $this->errorCode = ErrorCodeEnum::MISSING_STRING();
+        if ($arg === '-' . $argId) {
+            $this->errorArgument = $str;
+            $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::MISSING_STRING(), $arg);
+            throw new ArgsException();
         }
+
+        $this->stringArgs[$key] = $str;
     }
 
     /**
@@ -242,7 +320,7 @@ class Args
      * @param string $stringType
      * @return bool
      */
-    private function isString(string $stringType): bool
+    private function isStringArg(string $stringType): bool
     {
         $key = $stringType . self::STRING_KEY_END;
 
@@ -265,7 +343,7 @@ class Args
      * @param string $argId
      * @return bool
      */
-    private function isBoolean(string $argId): bool
+    private function isBooleanArg(string $argId): bool
     {
         return array_key_exists($argId, $this->booleanArgs);
     }
@@ -302,32 +380,30 @@ class Args
      */
     public function errorMessage(): string
     {
-        if (count($this->unexpectedArguments) > 0) {
-            return $this->unexpectedArgumentMessage();
-        } else {
-            switch ($this->errorCode) {
+        $message = '';
+        $newer = 'This cannot be, because this can never be!!!';
+
+        /** @var ParseError $error */
+        foreach ($this->argumentsParseErrors as $error) {
+            switch ($error->getErrorCode()) {
                 case ErrorCodeEnum::MISSING_STRING() :
-                    return 'Could not find string parameter for ' . $this->errorArgument;
+                    $message .= 'Could not find string parameter for ' . $error->getArgument() . '.' . PHP_EOL;
+                    break;
+                case ErrorCodeEnum::MISSING_INTEGER() :
+                    $message .= 'Could not find integer parameter for ' . $error->getArgument() . '.' . PHP_EOL;
+                    break;
+                case ErrorCodeEnum::INVALID_INTEGER() :
+                    $message .= 'Invalid integer parameter: ' . $error->getArgument() . '.' . PHP_EOL;
+                    break;
+                case ErrorCodeEnum::UNEXPECTED_ARGUMENT() :
+                    $message .= 'Argument "' . $error->getArgument() . '" unexpected.' . PHP_EOL;
+                    break;
                 case ErrorCodeEnum::OK() :
-                    return '';
+                    throw new Exception($newer);
+                default :
+                    throw new Exception($newer);
             }
         }
-        return '';
-    }
-
-    /**
-     * Get unexpected argument message.
-     *
-     * @return string
-     */
-    private function unexpectedArgumentMessage(): string
-    {
-        $message = 'Argument(s) - ';
-
-        foreach ($this->unexpectedArguments as $argument) {
-            $message .= $argument;
-        }
-        $message .= ' unexpected.';
 
         return $message;
     }
@@ -357,6 +433,19 @@ class Args
     }
 
     /**
+     * Get a integer argument.
+     *
+     * @param string $id
+     * @return integer|null
+     */
+    public function getInt(string $id)
+    {
+        $key = $id . self::INTEGER_KEY_END;
+
+        return $this->intArgs[$key] ?? null;
+    }
+
+    /**
      * Determine if an argument exists.
      *
      * @param string $arg
@@ -375,21 +464,5 @@ class Args
     public function isValid(): bool
     {
         return $this->valid;
-    }
-
-    /**
-     * What the fuck is Uncle Bob doing with this method?
-     * I have been trying to understand how to parse strings
-     * with it for a long time. But I didn't get it.
-     * In the end, I did it my own way.
-     * I will remove this unused method in the next iteration.
-     *
-     * @param string $arg
-     */
-    private function parseElements(string $arg): void
-    {
-        for ($i = 1; $i < strlen($arg); $i++) {
-            $this->parseElement($arg[$i]);
-        }
     }
 }
