@@ -6,6 +6,8 @@ use CleanCode\ArgumentMarshaler;
 
 class BooleanArgumentMarshaler extends ArgumentMarshaler
 {
+    protected bool $booleanValue = false;
+
     /**
      * @inheritDoc
      */

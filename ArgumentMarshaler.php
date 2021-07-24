@@ -4,7 +4,6 @@ namespace CleanCode;
 
 abstract class ArgumentMarshaler
 {
-    protected bool $booleanValue = false;
     private string $stringValue = '';
     private int $integerValue = 0;
 
@@ -21,26 +20,6 @@ abstract class ArgumentMarshaler
      * @return mixed
      */
     public abstract function get();
-
-    /**
-     * Set boolean value.
-     *
-     * @param bool $value
-     */
-    public function setBoolean(bool $value)
-    {
-        $this->booleanValue = $value;
-    }
-
-    /**
-     * Get boolean value.
-     *
-     * @return bool
-     */
-    public function getBoolean()
-    {
-        return $this->booleanValue;
-    }
 
     /**
      * Set string value.
