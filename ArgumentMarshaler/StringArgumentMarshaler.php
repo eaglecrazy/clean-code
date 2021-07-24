@@ -13,4 +13,12 @@ class StringArgumentMarshaler extends ArgumentMarshaler
     {
         // TODO: Implement set() method.
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function get()
+    {
+        // TODO: Implement get() method.
+    }
 }

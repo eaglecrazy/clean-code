@@ -431,7 +431,7 @@ class Args
         /** @var BooleanArgumentMarshaler $am */
         $am = $this->booleanArgs[$key] ?? null;
 
-        return $am ? $am->getBoolean() : false;
+        return $am ? $am->get() : false;
     }
 
     /**

@@ -13,4 +13,12 @@ class BooleanArgumentMarshaler extends ArgumentMarshaler
     {
         $this->booleanValue = true;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function get()
+    {
+        return $this->booleanValue;
+    }
 }

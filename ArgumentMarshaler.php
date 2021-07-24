@@ -13,7 +13,14 @@ abstract class ArgumentMarshaler
      *
      * @param string $s
      */
-    public abstract function set(string $s): void ;
+    public abstract function set(string $s): void;
+
+    /**
+     * Get a value.
+     *
+     * @return mixed
+     */
+    public abstract function get();
 
     /**
      * Set boolean value.
