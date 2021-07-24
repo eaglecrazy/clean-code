@@ -320,7 +320,7 @@ class Args
         /** @var StringArgumentMarshaler $stringMarshaler */
         $stringMarshaler = $this->stringArgs[$key];
 
-        $stringMarshaler->setString($str);
+        $stringMarshaler->set($str);
     }
 
     /**
@@ -447,7 +447,7 @@ class Args
         /** @var StringArgumentMarshaler $am */
         $am = $this->stringArgs[$key] ?? null;
 
-        return $am ? $am->getString() : '';
+        return $am ? $am->get() : '';
     }
 
     /**

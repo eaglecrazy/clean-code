@@ -6,12 +6,14 @@ use CleanCode\ArgumentMarshaler;
 
 class StringArgumentMarshaler extends ArgumentMarshaler
 {
+    private string $stringValue = '';
+
     /**
      * @inheritDoc
      */
     public function set(string $s): void
     {
-        // TODO: Implement set() method.
+        $this->stringValue = $s;
     }
 
     /**
@@ -19,6 +21,6 @@ class StringArgumentMarshaler extends ArgumentMarshaler
      */
     public function get()
     {
-        // TODO: Implement get() method.
+        return $this->stringValue;
     }
 }
