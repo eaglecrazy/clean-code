@@ -3,6 +3,7 @@
 namespace CleanCode;
 
 use CleanCode\ArgumentMarshaler\BooleanArgumentMarshaler;
+use CleanCode\ArgumentMarshaler\StringArgumentMarshaler;
 use CleanCode\Exceptions\ArgsException;
 use CleanCode\Exceptions\ParseException;
 use Exception;
@@ -145,7 +146,7 @@ class Args
      */
     private function parseStringSchemaElement(string $elementId): void
     {
-        $this->stringArgs[$elementId] = '';
+        $this->stringArgs[$elementId] = new StringArgumentMarshaler();
     }
 
     /**
@@ -274,13 +275,13 @@ class Args
      */
     private function setIntArg(string $argId, string $arg): void
     {
-        $int = substr($arg, 2);
-
         if ('-' . $argId === $arg) {
             $this->errorArgument = $arg;
             $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::MISSING_INTEGER(), $arg);
             throw new ArgsException();
         };
+
+        $int = substr($arg, 2);
 
         if (!ctype_digit($int)) {
             $this->errorArgument = $arg;
@@ -304,15 +305,18 @@ class Args
     {
         $str = substr($arg, 2);
 
-        $key = $argId . self::STRING_KEY_END;
-
         if ($arg === '-' . $argId) {
             $this->errorArgument = $str;
             $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::MISSING_STRING(), $arg);
             throw new ArgsException();
         }
 
-        $this->stringArgs[$key] = $str;
+        $key = $argId . self::STRING_KEY_END;
+
+        /** @var StringArgumentMarshaler $stringMarshaler */
+        $stringMarshaler = $this->stringArgs[$key];
+
+        $stringMarshaler->setString($str);
     }
 
     /**
@@ -421,7 +425,7 @@ class Args
     public function getBoolean(string $key): bool
     {
         /** @var BooleanArgumentMarshaler $am */
-        $am = $this->booleanArgs[$key] ?? false;
+        $am = $this->booleanArgs[$key] ?? null;
 
         return $am ? $am->getBoolean() : false;
     }
@@ -436,7 +440,10 @@ class Args
     {
         $key = $id . self::STRING_KEY_END;
 
-        return $this->stringArgs[$key] ?? '';
+        /** @var StringArgumentMarshaler $am */
+        $am = $this->stringArgs[$key] ?? null;
+
+        return $am ? $am->getString() : '';
     }
 
     /**

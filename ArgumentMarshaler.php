@@ -5,6 +5,7 @@ namespace CleanCode;
 class ArgumentMarshaler
 {
     private bool $booleanValue = false;
+    private string $stringValue = '';
 
     /**
      * Set boolean value.
@@ -26,4 +27,23 @@ class ArgumentMarshaler
         return $this->booleanValue;
     }
 
+    /**
+     * Set string value.
+     *
+     * @param string $value
+     */
+    public function setString(string $value)
+    {
+        $this->stringValue = $value;
+    }
+
+    /**
+     * Get string value.
+     *
+     * @return bool
+     */
+    public function getString()
+    {
+        return $this->stringValue;
+    }
 }
