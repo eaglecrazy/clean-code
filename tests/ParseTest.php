@@ -14,7 +14,7 @@ class ParseTest extends TestCase
         self::assertEquals(1, $arg->cardinality());
         self::assertEquals('', $arg->errorMessage());
 
-        self::assertEquals(true, $arg->getBool('l'));
+        self::assertEquals(true, $arg->getBoolean('l'));
         self::assertEquals('', $arg->getString('d'));
         self::assertEquals(null, $arg->getInt('p'));
 
@@ -31,7 +31,7 @@ class ParseTest extends TestCase
         self::assertEquals(1, $arg->cardinality());
         self::assertEquals('', $arg->errorMessage());
 
-        self::assertEquals(false, $arg->getBool('l'));
+        self::assertEquals(false, $arg->getBoolean('l'));
         self::assertEquals('/tmp', $arg->getString('d'));
         self::assertEquals(null, $arg->getInt('p'));
 
@@ -48,7 +48,7 @@ class ParseTest extends TestCase
         self::assertEquals(1, $arg->cardinality());
         self::assertEquals('', $arg->errorMessage());
 
-        self::assertEquals(false, $arg->getBool('l'));
+        self::assertEquals(false, $arg->getBoolean('l'));
         self::assertEquals('', $arg->getString('d'));
         self::assertEquals(80, $arg->getInt('p'));
 
@@ -65,7 +65,7 @@ class ParseTest extends TestCase
         self::assertEquals(3, $arg->cardinality());
         self::assertEquals('', $arg->errorMessage());
 
-        self::assertEquals(true, $arg->getBool('l'));
+        self::assertEquals(true, $arg->getBoolean('l'));
         self::assertEquals('/tmp', $arg->getString('d'));
         self::assertEquals(80, $arg->getInt('p'));
 

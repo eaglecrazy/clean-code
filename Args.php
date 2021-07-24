@@ -2,6 +2,7 @@
 
 namespace CleanCode;
 
+use CleanCode\ArgumentMarshaler\BooleanArgumentMarshaler;
 use CleanCode\Exceptions\ArgsException;
 use CleanCode\Exceptions\ParseException;
 use Exception;
@@ -124,7 +125,7 @@ class Args
      */
     private function parseBooleanSchemaElement(string $elementId): void
     {
-        $this->booleanArgs[$elementId] = false;
+        $this->booleanArgs[$elementId] = new BooleanArgumentMarshaler();
     }
 
     /**
@@ -334,7 +335,10 @@ class Args
      */
     private function setBooleanArg(string $key): void
     {
-        $this->booleanArgs[$key] = true;
+        /** @var BooleanArgumentMarshaler $booleanMarshaler */
+        $booleanMarshaler = $this->booleanArgs[$key];
+
+        $booleanMarshaler->setBoolean(true);
     }
 
     /**
@@ -414,9 +418,12 @@ class Args
      * @param string $key
      * @return bool
      */
-    public function getBool(string $key): bool
+    public function getBoolean(string $key): bool
     {
-        return $this->booleanArgs[$key] ?? false;
+        /** @var BooleanArgumentMarshaler $am */
+        $am = $this->booleanArgs[$key] ?? false;
+
+        return $am ? $am->getBoolean() : false;
     }
 
     /**

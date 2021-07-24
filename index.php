@@ -2,8 +2,7 @@
 
 /**
  * Clean code. Chapter 14 - "Successive refinement".
- * Args third version. Added integer type arguments.
- * Args class covered with tests.
+ * Refactoring process.
  */
 
 namespace CleanCode;
@@ -21,7 +20,7 @@ try {
     $arg = new Args($schema, $args);
 
     $directory = $arg->getString('d');
-    $logging = $arg->getBool('l');
+    $logging = $arg->getBoolean('l');
     $port = $arg->getInt('p');
 
     executeApplication($logging, $port, $directory);
