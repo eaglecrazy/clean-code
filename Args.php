@@ -346,7 +346,7 @@ class Args
         /** @var BooleanArgumentMarshaler $booleanMarshaler */
         $booleanMarshaler = $this->booleanArgs[$key];
 
-        $booleanMarshaler->setBoolean(true);
+        $booleanMarshaler->set('true');
     }
 
     /**

@@ -2,11 +2,18 @@
 
 namespace CleanCode;
 
-class ArgumentMarshaler
+abstract class ArgumentMarshaler
 {
-    private bool $booleanValue = false;
+    protected bool $booleanValue = false;
     private string $stringValue = '';
     private int $integerValue = 0;
+
+    /**
+     * Set a value.
+     *
+     * @param string $s
+     */
+    public abstract function set(string $s): void ;
 
     /**
      * Set boolean value.
