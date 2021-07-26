@@ -28,6 +28,7 @@ class Args
     private array $argsFound = [];
     private string $errorArgument = '\0';
     private array $argumentsParseErrors = [];
+    private int $currentArgument = 0;
 
     /**
      * @param string $schema
@@ -191,6 +192,7 @@ class Args
     {
         foreach ($this->args as $arg) {
             $this->parseArgument($arg);
+            $this->currentArgument++;
         }
     }
 
@@ -244,11 +246,11 @@ class Args
 
         if ($this->isBooleanArg($marshaler)) {
             //If a boolean argument was specified, then it is true.
-            $this->setBooleanArg($argType);
+            $this->setBooleanArg($marshaler);
         } else if ($this->isStringArg($marshaler)) {
-            $this->setStringArg($argType, $arg);
+            $this->setStringArg($marshaler);
         } else if ($this->isIntArg($marshaler)) {
-            $this->setIntArg($argType, $arg);
+            $this->setIntArg($marshaler);
         } else {
             return false;
         }
@@ -292,49 +294,45 @@ class Args
     /**
      * Set boolean argument.
      *
-     * @param string $key
+     * @param ArgumentMarshaler $marshaler
      */
-    private function setBooleanArg(string $key): void
+    private function setBooleanArg(ArgumentMarshaler $marshaler): void
     {
-        /** @var BooleanArgumentMarshaler $booleanMarshaler */
-        $booleanMarshaler = $this->marshalers[$key];
-
-        $booleanMarshaler->set('true');
+        $marshaler->set('true');
     }
 
     /**
      * Set string argument.
      *
-     * @param string $key
-     * @param string $arg
+     * @param ArgumentMarshaler $marshaler
      * @throws ArgsException
      */
-    private function setStringArg(string $key, string $arg): void
+    private function setStringArg(ArgumentMarshaler $marshaler): void
     {
+        $arg = $this->args[$this->currentArgument];
+
         $str = substr($arg, 2);
 
-        if ($arg === '-' . $key) {
+        if (strlen($arg) <= 2) {
             $this->errorArgument = $str;
             $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::MISSING_STRING(), $arg);
             throw new ArgsException();
         }
 
-        /** @var StringArgumentMarshaler $stringMarshaler */
-        $stringMarshaler = $this->marshalers[$key];
-
-        $stringMarshaler->set($str);
+        $marshaler->set($str);
     }
 
     /**
      * Set integer argument.
      *
-     * @param string $key
-     * @param string $arg
+     * @param ArgumentMarshaler $marshaler
      * @throws ArgsException
      */
-    private function setIntArg(string $key, string $arg): void
+    private function setIntArg(ArgumentMarshaler $marshaler): void
     {
-        if ('-' . $key === $arg) {
+        $arg = $this->args[$this->currentArgument];
+
+        if (strlen($arg) <= 2) {
             $this->errorArgument = $arg;
             $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::MISSING_INTEGER(), $arg);
             throw new ArgsException();
@@ -342,11 +340,8 @@ class Args
 
         $int = substr($arg, 2);
 
-        /** @var IntegerArgumentMarshaler $integerMarshaler */
-        $integerMarshaler = $this->marshalers[$key];
-
         try{
-            $integerMarshaler->set($int);
+            $marshaler->set($int);
         } catch (NumberFormatException $e){
             $this->errorArgument = $arg;
             $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::INVALID_INTEGER(), $arg);
