@@ -239,12 +239,15 @@ class Args
     {
         $argType = substr($arg, 1, 1);
 
-        if ($this->isBooleanArg($argType)) {
+        /** @var ArgumentMarshaler $stringMarshaler */
+        $marshaler = $this->marshalers[$argType] ?? null;
+
+        if ($this->isBooleanArg($marshaler)) {
             //If a boolean argument was specified, then it is true.
             $this->setBooleanArg($argType);
-        } else if ($this->isStringArg($argType)) {
+        } else if ($this->isStringArg($marshaler)) {
             $this->setStringArg($argType, $arg);
-        } else if ($this->isIntArg($argType)) {
+        } else if ($this->isIntArg($marshaler)) {
             $this->setIntArg($argType, $arg);
         } else {
             return false;
@@ -256,39 +259,33 @@ class Args
     /**
      * Determine if there is such a boolean element in the schema.
      *
-     * @param string $key
+     * @param ArgumentMarshaler|null $marshaler
      * @return bool
      */
-    private function isBooleanArg(string $key): bool
+    private function isBooleanArg(?ArgumentMarshaler $marshaler): bool
     {
-        $marshaler = $this->marshalers[$key] ?? null;
-
         return ($marshaler instanceof BooleanArgumentMarshaler);
     }
 
     /**
      * Determine if there is such a string element in the schema.
      *
-     * @param string $key
+     * @param ArgumentMarshaler|null $marshaler
      * @return bool
      */
-    private function isStringArg(string $key): bool
+    private function isStringArg(?ArgumentMarshaler $marshaler): bool
     {
-        $marshaler = $this->marshalers[$key] ?? null;
-
         return ($marshaler instanceof StringArgumentMarshaler);
     }
 
     /**
      * Determine if there is such a integer element in the schema.
      *
-     * @param string $key
+     * @param ArgumentMarshaler|null $marshaler
      * @return bool
      */
-    private function isIntArg(string $key): bool
+    private function isIntArg(?ArgumentMarshaler $marshaler): bool
     {
-        $marshaler = $this->marshalers[$key] ?? null;
-
         return ($marshaler instanceof IntegerArgumentMarshaler);
     }
 
