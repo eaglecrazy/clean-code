@@ -254,6 +254,32 @@ class Args
     }
 
     /**
+     * Determine if there is such a boolean element in the schema.
+     *
+     * @param string $key
+     * @return bool
+     */
+    private function isBooleanArg(string $key): bool
+    {
+        $marshaler = $this->marshalers[$key] ?? null;
+
+        return ($marshaler instanceof BooleanArgumentMarshaler);
+    }
+
+    /**
+     * Determine if there is such a string element in the schema.
+     *
+     * @param string $key
+     * @return bool
+     */
+    private function isStringArg(string $key): bool
+    {
+        $marshaler = $this->marshalers[$key] ?? null;
+
+        return ($marshaler instanceof StringArgumentMarshaler);
+    }
+
+    /**
      * Determine if there is such a integer element in the schema.
      *
      * @param string $key
@@ -267,32 +293,16 @@ class Args
     }
 
     /**
-     * Set integer argument.
+     * Set boolean argument.
      *
      * @param string $key
-     * @param string $arg
-     * @throws ArgsException
      */
-    private function setIntArg(string $key, string $arg): void
+    private function setBooleanArg(string $key): void
     {
-        if ('-' . $key === $arg) {
-            $this->errorArgument = $arg;
-            $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::MISSING_INTEGER(), $arg);
-            throw new ArgsException();
-        };
+        /** @var BooleanArgumentMarshaler $booleanMarshaler */
+        $booleanMarshaler = $this->marshalers[$key];
 
-        $int = substr($arg, 2);
-
-        /** @var IntegerArgumentMarshaler $integerMarshaler */
-        $integerMarshaler = $this->marshalers[$key];
-
-        try{
-            $integerMarshaler->set($int);
-        } catch (NumberFormatException $e){
-            $this->errorArgument = $arg;
-            $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::INVALID_INTEGER(), $arg);
-            throw new ArgsException();
-        }
+        $booleanMarshaler->set('true');
     }
 
     /**
@@ -319,42 +329,32 @@ class Args
     }
 
     /**
-     * Determine if there is such a string element in the schema.
+     * Set integer argument.
      *
      * @param string $key
-     * @return bool
+     * @param string $arg
+     * @throws ArgsException
      */
-    private function isStringArg(string $key): bool
+    private function setIntArg(string $key, string $arg): void
     {
-        $marshaler = $this->marshalers[$key] ?? null;
+        if ('-' . $key === $arg) {
+            $this->errorArgument = $arg;
+            $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::MISSING_INTEGER(), $arg);
+            throw new ArgsException();
+        }
 
-        return ($marshaler instanceof StringArgumentMarshaler);
-    }
+        $int = substr($arg, 2);
 
-    /**
-     * Set boolean argument.
-     *
-     * @param string $key
-     */
-    private function setBooleanArg(string $key): void
-    {
-        /** @var BooleanArgumentMarshaler $booleanMarshaler */
-        $booleanMarshaler = $this->marshalers[$key];
+        /** @var IntegerArgumentMarshaler $integerMarshaler */
+        $integerMarshaler = $this->marshalers[$key];
 
-        $booleanMarshaler->set('true');
-    }
-
-    /**
-     * Determine if there is such a boolean element in the schema.
-     *
-     * @param string $key
-     * @return bool
-     */
-    private function isBooleanArg(string $key): bool
-    {
-        $marshaler = $this->marshalers[$key] ?? null;
-
-        return ($marshaler instanceof BooleanArgumentMarshaler);
+        try{
+            $integerMarshaler->set($int);
+        } catch (NumberFormatException $e){
+            $this->errorArgument = $arg;
+            $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::INVALID_INTEGER(), $arg);
+            throw new ArgsException();
+        }
     }
 
     /**
