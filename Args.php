@@ -96,11 +96,11 @@ class Args
         $this->validateSchemaElementId($elementId);
 
         if ($this->isBooleanSchemaElement($elementTail)) {
-            $this->parseBooleanSchemaElement($element);
+            $this->parseBooleanSchemaElement($elementId);
         } else if ($this->isStringSchemaElement($elementTail)) {
-            $this->parseStringSchemaElement($element);
+            $this->parseStringSchemaElement($elementId);
         } else if ($this->isIntegerSchemaElement($elementTail)) {
-            $this->parseIntegerSchemaElement($element);
+            $this->parseIntegerSchemaElement($elementId);
         } else {
             throw new ParseException("Unknown element:" . $elementId . " in schema: " . $this->schema, 0);
         }
@@ -256,13 +256,11 @@ class Args
     /**
      * Determine if there is such a integer element in the schema.
      *
-     * @param string $intType
+     * @param string $key
      * @return bool
      */
-    private function isIntArg(string $intType): bool
+    private function isIntArg(string $key): bool
     {
-        $key = $intType . self::INTEGER_KEY_END;
-
         $marshaler = $this->marshalers[$key] ?? null;
 
         return ($marshaler instanceof IntegerArgumentMarshaler);
@@ -271,21 +269,19 @@ class Args
     /**
      * Set integer argument.
      *
-     * @param string $argId
+     * @param string $key
      * @param string $arg
      * @throws ArgsException
      */
-    private function setIntArg(string $argId, string $arg): void
+    private function setIntArg(string $key, string $arg): void
     {
-        if ('-' . $argId === $arg) {
+        if ('-' . $key === $arg) {
             $this->errorArgument = $arg;
             $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::MISSING_INTEGER(), $arg);
             throw new ArgsException();
         };
 
         $int = substr($arg, 2);
-
-        $key = $argId . self::INTEGER_KEY_END;
 
         /** @var IntegerArgumentMarshaler $integerMarshaler */
         $integerMarshaler = $this->marshalers[$key];
@@ -302,21 +298,19 @@ class Args
     /**
      * Set string argument.
      *
-     * @param string $argId
+     * @param string $key
      * @param string $arg
      * @throws ArgsException
      */
-    private function setStringArg(string $argId, string $arg): void
+    private function setStringArg(string $key, string $arg): void
     {
         $str = substr($arg, 2);
 
-        if ($arg === '-' . $argId) {
+        if ($arg === '-' . $key) {
             $this->errorArgument = $str;
             $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::MISSING_STRING(), $arg);
             throw new ArgsException();
         }
-
-        $key = $argId . self::STRING_KEY_END;
 
         /** @var StringArgumentMarshaler $stringMarshaler */
         $stringMarshaler = $this->marshalers[$key];
@@ -327,13 +321,11 @@ class Args
     /**
      * Determine if there is such a string element in the schema.
      *
-     * @param string $stringType
+     * @param string $key
      * @return bool
      */
-    private function isStringArg(string $stringType): bool
+    private function isStringArg(string $key): bool
     {
-        $key = $stringType . self::STRING_KEY_END;
-
         $marshaler = $this->marshalers[$key] ?? null;
 
         return ($marshaler instanceof StringArgumentMarshaler);
@@ -355,12 +347,12 @@ class Args
     /**
      * Determine if there is such a boolean element in the schema.
      *
-     * @param string $booleanType
+     * @param string $key
      * @return bool
      */
-    private function isBooleanArg(string $booleanType): bool
+    private function isBooleanArg(string $key): bool
     {
-        $marshaler = $this->marshalers[$booleanType] ?? null;
+        $marshaler = $this->marshalers[$key] ?? null;
 
         return ($marshaler instanceof BooleanArgumentMarshaler);
     }
@@ -442,13 +434,11 @@ class Args
     /**
      * Get a string argument.
      *
-     * @param string $id
+     * @param string $key
      * @return string
      */
-    public function getString(string $id): string
+    public function getString(string $key): string
     {
-        $key = $id . self::STRING_KEY_END;
-
         /** @var StringArgumentMarshaler $am */
         $am = $this->marshalers[$key] ?? null;
 
@@ -458,13 +448,11 @@ class Args
     /**
      * Get a integer argument.
      *
-     * @param string $id
+     * @param string $key
      * @return integer|null
      */
-    public function getInt(string $id)
+    public function getInt(string $key): int
     {
-        $key = $id . self::INTEGER_KEY_END;
-
         /** @var IntegerArgumentMarshaler $am */
         $am = $this->marshalers[$key] ?? null;
 
