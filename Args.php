@@ -244,51 +244,18 @@ class Args
         /** @var ArgumentMarshaler $stringMarshaler */
         $marshaler = $this->marshalers[$argType] ?? null;
 
-        if ($this->isBooleanArg($marshaler)) {
+        if ($marshaler instanceof BooleanArgumentMarshaler) {
             //If a boolean argument was specified, then it is true.
             $this->setBooleanArg($marshaler);
-        } else if ($this->isStringArg($marshaler)) {
+        } else if ($marshaler instanceof StringArgumentMarshaler) {
             $this->setStringArg($marshaler);
-        } else if ($this->isIntArg($marshaler)) {
+        } else if ($marshaler instanceof IntegerArgumentMarshaler) {
             $this->setIntArg($marshaler);
         } else {
             return false;
         }
 
         return true;
-    }
-
-    /**
-     * Determine if there is such a boolean element in the schema.
-     *
-     * @param ArgumentMarshaler|null $marshaler
-     * @return bool
-     */
-    private function isBooleanArg(?ArgumentMarshaler $marshaler): bool
-    {
-        return ($marshaler instanceof BooleanArgumentMarshaler);
-    }
-
-    /**
-     * Determine if there is such a string element in the schema.
-     *
-     * @param ArgumentMarshaler|null $marshaler
-     * @return bool
-     */
-    private function isStringArg(?ArgumentMarshaler $marshaler): bool
-    {
-        return ($marshaler instanceof StringArgumentMarshaler);
-    }
-
-    /**
-     * Determine if there is such a integer element in the schema.
-     *
-     * @param ArgumentMarshaler|null $marshaler
-     * @return bool
-     */
-    private function isIntArg(?ArgumentMarshaler $marshaler): bool
-    {
-        return ($marshaler instanceof IntegerArgumentMarshaler);
     }
 
     /**
