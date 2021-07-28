@@ -97,11 +97,11 @@ class Args
         $this->validateSchemaElementId($elementId);
 
         if ($this->isBooleanSchemaElement($elementTail)) {
-            $this->parseBooleanSchemaElement($elementId);
+            $this->marshalers[$elementId] = new BooleanArgumentMarshaler();
         } else if ($this->isStringSchemaElement($elementTail)) {
-            $this->parseStringSchemaElement($elementId);
+            $this->marshalers[$elementId] = new StringArgumentMarshaler();
         } else if ($this->isIntegerSchemaElement($elementTail)) {
-            $this->parseIntegerSchemaElement($elementId);
+            $this->marshalers[$elementId] = new IntegerArgumentMarshaler();
         } else {
             throw new ParseException("Unknown element:" . $elementId . " in schema: " . $this->schema, 0);
         }
@@ -118,36 +118,6 @@ class Args
         if (!ctype_alpha($elementId)) {
             throw new ParseException("Bad character:" . $elementId . " in schema: " . $this->schema, 0);
         }
-    }
-
-    /**
-     * Create storage for boolean element.
-     *
-     * @param string $elementId
-     */
-    private function parseBooleanSchemaElement(string $elementId): void
-    {
-        $this->marshalers[$elementId] = new BooleanArgumentMarshaler();
-    }
-
-    /**
-     * Create storage for integer element.
-     *
-     * @param string $elementId
-     */
-    private function parseIntegerSchemaElement(string $elementId): void
-    {
-        $this->marshalers[$elementId] = new IntegerArgumentMarshaler();
-    }
-
-    /**
-     * Create storage for string element.
-     *
-     * @param string $elementId
-     */
-    private function parseStringSchemaElement(string $elementId): void
-    {
-        $this->marshalers[$elementId] = new StringArgumentMarshaler();
     }
 
     /**
