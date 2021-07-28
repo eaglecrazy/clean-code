@@ -28,7 +28,7 @@ class Args
     private array $argsFound = [];
     private string $errorArgument = '\0';
     private array $argumentsParseErrors = [];
-    private int $currentArgument = 0;
+    private Iterator $argsList;
 
     /**
      * @param string $schema
@@ -39,6 +39,7 @@ class Args
     {
         $this->schema = $schema;
         $this->args = $args;
+        $this->argsList = new Iterator($args);
         $this->valid = $this->parse();
     }
 
@@ -50,7 +51,7 @@ class Args
      */
     private function parse(): bool
     {
-        if (strlen($this->schema) == 0 && count($this->args) == 0) {
+        if (strlen($this->schema) == 0 && $this->argsList->notEmpty()) {
             return true;
         }
 
@@ -160,9 +161,9 @@ class Args
      */
     private function parseArguments(): void
     {
-        foreach ($this->args as $arg) {
-            $this->parseArgument($arg);
-            $this->currentArgument++;
+        while ($this->argsList->hasNext()){;
+            $this->parseArgument($this->argsList->current());
+            $this->argsList->next();
         }
     }
 
@@ -251,7 +252,7 @@ class Args
      */
     private function setStringArg(ArgumentMarshaler $marshaler): void
     {
-        $arg = $this->args[$this->currentArgument];
+        $arg = $this->argsList->current();
 
         $str = substr($arg, 2);
 
@@ -271,7 +272,7 @@ class Args
      */
     private function setIntArg(ArgumentMarshaler $marshaler): void
     {
-        $arg = $this->args[$this->currentArgument];
+        $arg = $this->argsList->current();
 
         if (strlen($arg) <= 2) {
             $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::MISSING_INTEGER(), $arg);
