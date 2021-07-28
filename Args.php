@@ -244,15 +244,20 @@ class Args
         /** @var ArgumentMarshaler $stringMarshaler */
         $marshaler = $this->marshalers[$argType] ?? null;
 
-        if ($marshaler instanceof BooleanArgumentMarshaler) {
-            //If a boolean argument was specified, then it is true.
-            $this->setBooleanArg($marshaler);
-        } else if ($marshaler instanceof StringArgumentMarshaler) {
-            $this->setStringArg($marshaler);
-        } else if ($marshaler instanceof IntegerArgumentMarshaler) {
-            $this->setIntArg($marshaler);
-        } else {
-            return false;
+        try {
+            if ($marshaler instanceof BooleanArgumentMarshaler) {
+                //If a boolean argument was specified, then it is true.
+                $this->setBooleanArg($marshaler);
+            } else if ($marshaler instanceof StringArgumentMarshaler) {
+                $this->setStringArg($marshaler);
+            } else if ($marshaler instanceof IntegerArgumentMarshaler) {
+                $this->setIntArg($marshaler);
+            } else {
+                return false;
+            }
+        } catch (ArgsException $e) {
+            $this->errorArgument = $arg;
+            throw $e;
         }
 
         return true;
@@ -281,7 +286,6 @@ class Args
         $str = substr($arg, 2);
 
         if (strlen($arg) <= 2) {
-            $this->errorArgument = $str;
             $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::MISSING_STRING(), $arg);
             throw new ArgsException();
         }
@@ -300,7 +304,6 @@ class Args
         $arg = $this->args[$this->currentArgument];
 
         if (strlen($arg) <= 2) {
-            $this->errorArgument = $arg;
             $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::MISSING_INTEGER(), $arg);
             throw new ArgsException();
         }
@@ -310,7 +313,6 @@ class Args
         try{
             $marshaler->set($int);
         } catch (NumberFormatException $e){
-            $this->errorArgument = $arg;
             $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::INVALID_INTEGER(), $arg);
             throw new ArgsException();
         }
