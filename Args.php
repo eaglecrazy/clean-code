@@ -215,16 +215,18 @@ class Args
         /** @var ArgumentMarshaler $stringMarshaler */
         $marshaler = $this->marshalers[$argType] ?? null;
 
+        if(!$marshaler){
+            return false;
+        }
+
         try {
             if ($marshaler instanceof BooleanArgumentMarshaler) {
                 //If a boolean argument was specified, then it is true.
-                $this->setBooleanArg($marshaler);
+                $marshaler->set($this->argsList->current());
             } else if ($marshaler instanceof StringArgumentMarshaler) {
                 $this->setStringArg($marshaler);
             } else if ($marshaler instanceof IntegerArgumentMarshaler) {
                 $this->setIntArg($marshaler);
-            } else {
-                return false;
             }
         } catch (ArgsException $e) {
             $this->errorArgument = $arg;
@@ -232,16 +234,6 @@ class Args
         }
 
         return true;
-    }
-
-    /**
-     * Set boolean argument.
-     *
-     * @param ArgumentMarshaler $marshaler
-     */
-    private function setBooleanArg(ArgumentMarshaler $marshaler): void
-    {
-        $marshaler->set('true');
     }
 
     /**
