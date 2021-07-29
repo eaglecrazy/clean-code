@@ -2,12 +2,15 @@
 
 namespace CleanCode;
 
+use CleanCode\Exceptions\ArgsException;
+
 abstract class ArgumentMarshaler
 {
     /**
      * Set a value.
      *
      * @param string $s
+     * @throws ArgsException
      */
     public abstract function set(string $s): void;
 

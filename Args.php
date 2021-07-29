@@ -221,31 +221,12 @@ class Args
             //If a boolean argument was specified, then it is true.
             $marshaler->set($this->argsList->current());
         } else if ($marshaler instanceof StringArgumentMarshaler) {
-            $this->setStringArg($marshaler);
+            $marshaler->set($this->argsList->current());
         } else if ($marshaler instanceof IntegerArgumentMarshaler) {
             $this->setIntArg($marshaler);
         }
 
         return true;
-    }
-
-    /**
-     * Set string argument.
-     *
-     * @param ArgumentMarshaler $marshaler
-     * @throws ArgsException
-     */
-    private function setStringArg(ArgumentMarshaler $marshaler): void
-    {
-        $arg = $this->argsList->current();
-
-        $str = substr($arg, 2);
-
-        if (strlen($arg) <= 2) {
-            throw new ArgsException(ErrorCodeEnum::MISSING_STRING(), $arg);
-        }
-
-        $marshaler->set($str);
     }
 
     /**

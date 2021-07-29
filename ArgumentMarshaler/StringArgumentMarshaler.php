@@ -3,6 +3,8 @@
 namespace CleanCode\ArgumentMarshaler;
 
 use CleanCode\ArgumentMarshaler;
+use CleanCode\ErrorCodeEnum;
+use CleanCode\Exceptions\ArgsException;
 
 class StringArgumentMarshaler extends ArgumentMarshaler
 {
@@ -13,7 +15,11 @@ class StringArgumentMarshaler extends ArgumentMarshaler
      */
     public function set(string $s): void
     {
-        $this->stringValue = $s;
+        if (strlen($s) <= 2) {
+            throw new ArgsException(ErrorCodeEnum::MISSING_STRING(), $s);
+        }
+
+        $this->stringValue = substr($s, 2);
     }
 
     /**
