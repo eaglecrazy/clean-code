@@ -26,7 +26,6 @@ class Args
     private array $unexpectedArguments = [];
     private array $marshalers = [];
     private array $argsFound = [];
-    private string $errorArgument = '\0';
     private array $argumentsParseErrors = [];
     private Iterator $argsList;
 
@@ -60,6 +59,7 @@ class Args
         try {
             $this->parseArguments();
         } catch (ArgsException $e) {
+            $this->argumentsParseErrors[] = $e;
             $this->valid = false;
         }
 
@@ -161,7 +161,7 @@ class Args
      */
     private function parseArguments(): void
     {
-        while ($this->argsList->hasNext()){;
+        while ($this->argsList->hasNext()){
             $this->parseArgument($this->argsList->current());
             $this->argsList->next();
         }
@@ -179,8 +179,7 @@ class Args
             $this->parseElement($arg);
         } else {
             $this->unexpectedArguments[] = $arg;
-            $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::UNEXPECTED_ARGUMENT(), $arg);
-            throw new ArgsException();
+            throw new ArgsException(ErrorCodeEnum::UNEXPECTED_ARGUMENT(), $arg);
         }
     }
 
@@ -196,8 +195,7 @@ class Args
             $this->argsFound[] = $arg;
         } else {
             $this->unexpectedArguments[] = $arg;
-            $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::UNEXPECTED_ARGUMENT(), $arg);
-            throw new ArgsException();
+            throw new ArgsException(ErrorCodeEnum::UNEXPECTED_ARGUMENT(), $arg);
         }
     }
 
@@ -219,18 +217,13 @@ class Args
             return false;
         }
 
-        try {
-            if ($marshaler instanceof BooleanArgumentMarshaler) {
-                //If a boolean argument was specified, then it is true.
-                $marshaler->set($this->argsList->current());
-            } else if ($marshaler instanceof StringArgumentMarshaler) {
-                $this->setStringArg($marshaler);
-            } else if ($marshaler instanceof IntegerArgumentMarshaler) {
-                $this->setIntArg($marshaler);
-            }
-        } catch (ArgsException $e) {
-            $this->errorArgument = $arg;
-            throw $e;
+        if ($marshaler instanceof BooleanArgumentMarshaler) {
+            //If a boolean argument was specified, then it is true.
+            $marshaler->set($this->argsList->current());
+        } else if ($marshaler instanceof StringArgumentMarshaler) {
+            $this->setStringArg($marshaler);
+        } else if ($marshaler instanceof IntegerArgumentMarshaler) {
+            $this->setIntArg($marshaler);
         }
 
         return true;
@@ -249,8 +242,7 @@ class Args
         $str = substr($arg, 2);
 
         if (strlen($arg) <= 2) {
-            $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::MISSING_STRING(), $arg);
-            throw new ArgsException();
+            throw new ArgsException(ErrorCodeEnum::MISSING_STRING(), $arg);
         }
 
         $marshaler->set($str);
@@ -267,8 +259,7 @@ class Args
         $arg = $this->argsList->current();
 
         if (strlen($arg) <= 2) {
-            $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::MISSING_INTEGER(), $arg);
-            throw new ArgsException();
+            throw new ArgsException(ErrorCodeEnum::MISSING_INTEGER(), $arg);
         }
 
         $int = substr($arg, 2);
@@ -276,8 +267,7 @@ class Args
         try{
             $marshaler->set($int);
         } catch (NumberFormatException $e){
-            $this->argumentsParseErrors[] = new ParseError(ErrorCodeEnum::INVALID_INTEGER(), $arg);
-            throw new ArgsException();
+            throw new ArgsException(ErrorCodeEnum::INVALID_INTEGER(), $arg);
         }
     }
 
@@ -316,7 +306,7 @@ class Args
         $message = '';
         $newer = 'This cannot be, because this can never be!!!';
 
-        /** @var ParseError $error */
+        /** @var ArgsException $error */
         foreach ($this->argumentsParseErrors as $error) {
             switch ($error->getErrorCode()) {
                 case ErrorCodeEnum::MISSING_STRING() :
