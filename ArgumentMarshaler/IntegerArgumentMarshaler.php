@@ -3,7 +3,8 @@
 namespace CleanCode\ArgumentMarshaler;
 
 use CleanCode\ArgumentMarshaler;
-use CleanCode\Exceptions\NumberFormatException;
+use CleanCode\ErrorCodeEnum;
+use CleanCode\Exceptions\ArgsException;
 
 class IntegerArgumentMarshaler extends ArgumentMarshaler
 {
@@ -11,15 +12,20 @@ class IntegerArgumentMarshaler extends ArgumentMarshaler
 
     /**
      * @inheritDoc
-     * @throws NumberFormatException
      */
     public function set(string $s): void
     {
-        if (!ctype_digit($s)) {
-            throw new NumberFormatException();
+        if (strlen($s) <= 2) {
+            throw new ArgsException(ErrorCodeEnum::MISSING_INTEGER(), $s);
         }
 
-        $this->integerValue = $s;
+        $int = substr($s, 2);
+
+        if (!ctype_digit($int)) {
+            throw new ArgsException(ErrorCodeEnum::INVALID_INTEGER(), $s);
+        }
+
+        $this->integerValue = $int;
     }
 
     /**

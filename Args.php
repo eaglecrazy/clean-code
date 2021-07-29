@@ -6,7 +6,6 @@ use CleanCode\ArgumentMarshaler\BooleanArgumentMarshaler;
 use CleanCode\ArgumentMarshaler\IntegerArgumentMarshaler;
 use CleanCode\ArgumentMarshaler\StringArgumentMarshaler;
 use CleanCode\Exceptions\ArgsException;
-use CleanCode\Exceptions\NumberFormatException;
 use CleanCode\Exceptions\ParseException;
 use Exception;
 
@@ -223,33 +222,10 @@ class Args
         } else if ($marshaler instanceof StringArgumentMarshaler) {
             $marshaler->set($this->argsList->current());
         } else if ($marshaler instanceof IntegerArgumentMarshaler) {
-            $this->setIntArg($marshaler);
+            $marshaler->set($this->argsList->current());
         }
 
         return true;
-    }
-
-    /**
-     * Set integer argument.
-     *
-     * @param ArgumentMarshaler $marshaler
-     * @throws ArgsException
-     */
-    private function setIntArg(ArgumentMarshaler $marshaler): void
-    {
-        $arg = $this->argsList->current();
-
-        if (strlen($arg) <= 2) {
-            throw new ArgsException(ErrorCodeEnum::MISSING_INTEGER(), $arg);
-        }
-
-        $int = substr($arg, 2);
-
-        try{
-            $marshaler->set($int);
-        } catch (NumberFormatException $e){
-            throw new ArgsException(ErrorCodeEnum::INVALID_INTEGER(), $arg);
-        }
     }
 
     /**
