@@ -203,7 +203,6 @@ class Args
      *
      * @param string $arg
      * @return bool
-     * @throws ArgsException
      */
     private function setArgument(string $arg): bool
     {
@@ -216,14 +215,7 @@ class Args
             return false;
         }
 
-        if ($marshaler instanceof BooleanArgumentMarshaler) {
-            //If a boolean argument was specified, then it is true.
-            $marshaler->set($this->argsList->current());
-        } else if ($marshaler instanceof StringArgumentMarshaler) {
-            $marshaler->set($this->argsList->current());
-        } else if ($marshaler instanceof IntegerArgumentMarshaler) {
-            $marshaler->set($this->argsList->current());
-        }
+        $marshaler->set($this->argsList->current());
 
         return true;
     }
