@@ -4,7 +4,7 @@ namespace CleanCode;
 
 use CleanCode\Exceptions\ArgsException;
 
-abstract class ArgumentMarshaler
+interface ArgumentMarshaler
 {
     /**
      * Set a value.
@@ -12,12 +12,12 @@ abstract class ArgumentMarshaler
      * @param string $s
      * @throws ArgsException
      */
-    public abstract function set(string $s): void;
+    public function set(string $s): void;
 
     /**
      * Get a value.
      *
      * @return mixed
      */
-    public abstract function get();
+    public function get();
 }

@@ -6,7 +6,7 @@ use CleanCode\ArgumentMarshaler;
 use CleanCode\ErrorCodeEnum;
 use CleanCode\Exceptions\ArgsException;
 
-class IntegerArgumentMarshaler extends ArgumentMarshaler
+class IntegerArgumentMarshaler implements ArgumentMarshaler
 {
     private int $integerValue = 0;
 

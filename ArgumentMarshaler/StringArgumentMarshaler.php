@@ -6,7 +6,7 @@ use CleanCode\ArgumentMarshaler;
 use CleanCode\ErrorCodeEnum;
 use CleanCode\Exceptions\ArgsException;
 
-class StringArgumentMarshaler extends ArgumentMarshaler
+class StringArgumentMarshaler implements ArgumentMarshaler
 {
     private string $stringValue = '';
 
