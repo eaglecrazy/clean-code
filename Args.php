@@ -92,15 +92,15 @@ class Args
     {
         $elementId = $element[0];
 
-        $elementTail = substr($element, 1);
-
         $this->validateSchemaElementId($elementId);
 
-        if ($this->isBooleanSchemaElement($elementTail)) {
+        $elementTail = substr($element, 1);
+
+        if ($elementTail === '') {
             $this->marshalers[$elementId] = new BooleanArgumentMarshaler();
-        } else if ($this->isStringSchemaElement($elementTail)) {
+        } else if ($elementTail === self::STRING_KEY_END) {
             $this->marshalers[$elementId] = new StringArgumentMarshaler();
-        } else if ($this->isIntegerSchemaElement($elementTail)) {
+        } else if ($elementTail === self::INTEGER_KEY_END) {
             $this->marshalers[$elementId] = new IntegerArgumentMarshaler();
         } else {
             throw new ParseException("Unknown element:" . $elementId . " in schema: " . $this->schema, 0);
@@ -118,39 +118,6 @@ class Args
         if (!ctype_alpha($elementId)) {
             throw new ParseException("Bad character:" . $elementId . " in schema: " . $this->schema, 0);
         }
-    }
-
-    /**
-     * Determine if it is a string element.
-     *
-     * @param string $elementTail
-     * @return bool
-     */
-    private function isStringSchemaElement(string $elementTail): bool
-    {
-        return $elementTail === self::STRING_KEY_END;
-    }
-
-    /**
-     * Determine if it is a boolean element.
-     *
-     * @param string $elementTail
-     * @return bool
-     */
-    private function isBooleanSchemaElement(string $elementTail): bool
-    {
-        return $elementTail === '';
-    }
-
-    /**
-     * Determine if it is a integer element.
-     *
-     * @param string $elementTail
-     * @return bool
-     */
-    private function isIntegerSchemaElement(string $elementTail): bool
-    {
-        return $elementTail === self::INTEGER_KEY_END;
     }
 
     /**
