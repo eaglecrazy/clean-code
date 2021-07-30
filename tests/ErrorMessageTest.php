@@ -45,6 +45,26 @@ class ErrorMessageTest extends TestCase
         self::assertEquals('Invalid integer parameter: -px.' . PHP_EOL, $arg->errorMessage());
     }
 
+    public function testMissingDouble()
+    {
+        $args = ['-f'];
+        $schema = 'f##';
+        $arg = new Args($schema, $args);
+
+        self::assertEquals(false, $arg->isValid());
+        self::assertEquals('Could not find double parameter for -f.' . PHP_EOL, $arg->errorMessage());
+    }
+
+    public function testInvalidDouble()
+    {
+        $args = ['-fx'];
+        $schema = 'f##';
+        $arg = new Args($schema, $args);
+
+        self::assertEquals(false, $arg->isValid());
+        self::assertEquals('Invalid double parameter: -fx.' . PHP_EOL, $arg->errorMessage());
+    }
+
     public function testUnexpectedArgument()
     {
         $args = ['-e'];

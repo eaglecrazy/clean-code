@@ -3,6 +3,7 @@
 namespace CleanCode;
 
 use CleanCode\ArgumentMarshaler\BooleanArgumentMarshaler;
+use CleanCode\ArgumentMarshaler\DoubleArgumentMarshaler;
 use CleanCode\ArgumentMarshaler\IntegerArgumentMarshaler;
 use CleanCode\ArgumentMarshaler\StringArgumentMarshaler;
 use CleanCode\Exceptions\ArgsException;
@@ -18,6 +19,7 @@ class Args
 {
     private const STRING_KEY_END = '*';
     private const INTEGER_KEY_END = '#';
+    private const DOUBLE_KEY_END = '##';
 
     private string $schema;
     private array $args;
@@ -102,6 +104,8 @@ class Args
             $this->marshalers[$elementId] = new StringArgumentMarshaler();
         } else if ($elementTail === self::INTEGER_KEY_END) {
             $this->marshalers[$elementId] = new IntegerArgumentMarshaler();
+        } else if ($elementTail === self::DOUBLE_KEY_END) {
+            $this->marshalers[$elementId] = new DoubleArgumentMarshaler();
         } else {
             throw new ParseException("Unknown element:" . $elementId . " in schema: " . $this->schema, 0);
         }
@@ -234,6 +238,12 @@ class Args
                 case ErrorCodeEnum::INVALID_INTEGER() :
                     $message .= 'Invalid integer parameter: ' . $error->getArgument() . '.' . PHP_EOL;
                     break;
+                case ErrorCodeEnum::MISSING_DOUBLE() :
+                    $message .= 'Could not find double parameter for ' . $error->getArgument() . '.' . PHP_EOL;
+                    break;
+                case ErrorCodeEnum::INVALID_DOUBLE() :
+                    $message .= 'Invalid double parameter: ' . $error->getArgument() . '.' . PHP_EOL;
+                    break;
                 case ErrorCodeEnum::UNEXPECTED_ARGUMENT() :
                     $message .= 'Argument "' . $error->getArgument() . '" unexpected.' . PHP_EOL;
                     break;
@@ -284,6 +294,20 @@ class Args
     public function getInt(string $key): int
     {
         /** @var IntegerArgumentMarshaler $am */
+        $am = $this->marshalers[$key] ?? null;
+
+        return $am ? $am->get() : 0;
+    }
+
+    /**
+     * Get a double argument.
+     *
+     * @param string $key
+     * @return float|null
+     */
+    public function getDouble(string $key): float
+    {
+        /** @var DoubleArgumentMarshaler $am */
         $am = $this->marshalers[$key] ?? null;
 
         return $am ? $am->get() : 0;

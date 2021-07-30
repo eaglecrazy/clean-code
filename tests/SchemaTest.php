@@ -16,6 +16,9 @@ class SchemaTest extends TestCase
 
         $arg3 = new Args('l,d*,p#', ['-l', '-d/tmp', '-p80']);
         self::assertEquals('-[l,d*,p#]', $arg3->usage());
+
+        $arg4 = new Args('l,d*,p#,f##', ['-l', '-d/tmp', '-p80', '-f3.14']);
+        self::assertEquals('-[l,d*,p#,f##]', $arg4->usage());
     }
 
     public function testBadCharacterSchemaElement()
