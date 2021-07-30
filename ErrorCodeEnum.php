@@ -12,6 +12,8 @@ use MyCLabs\Enum\Enum;
  * @method static ErrorCodeEnum MISSING_DOUBLE()
  * @method static ErrorCodeEnum INVALID_DOUBLE()
  * @method static ErrorCodeEnum UNEXPECTED_ARGUMENT()
+ * @method static ErrorCodeEnum SCHEMA_UNKNOWN_ELEMENT()
+ * @method static ErrorCodeEnum SCHEMA_BAD_CHARACTER()
  */
 final class ErrorCodeEnum extends Enum
 {
@@ -22,4 +24,6 @@ final class ErrorCodeEnum extends Enum
     private const MISSING_DOUBLE = 'MISSING_DOUBLE';
     private const INVALID_DOUBLE = 'INVALID_DOUBLE';
     private const UNEXPECTED_ARGUMENT = 'UNEXPECTED_ARGUMENT';
+    private const SCHEMA_UNKNOWN_ELEMENT = 'SCHEMA_UNKNOWN_ELEMENT';
+    private const SCHEMA_BAD_CHARACTER = 'SCHEMA_BAD_CHARACTER';
 }

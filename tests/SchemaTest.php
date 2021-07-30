@@ -1,7 +1,7 @@
 <?php
 
 use CleanCode\Args;
-use CleanCode\Exceptions\ParseException;
+use CleanCode\ArgsException;
 use PHPUnit\Framework\TestCase;
 
 class SchemaTest extends TestCase
@@ -23,13 +23,13 @@ class SchemaTest extends TestCase
 
     public function testBadCharacterSchemaElement()
     {
-        self::expectException(ParseException::class);
+        self::expectException(ArgsException::class);
         new Args("error", ['-1']);
     }
 
     public function testUnknownSchemaElement()
     {
-        self::expectException(ParseException::class);
+        self::expectException(ArgsException::class);
         new Args("error", ['-l']);
     }
 }

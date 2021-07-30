@@ -4,7 +4,7 @@ namespace CleanCode\ArgumentMarshaler;
 
 use CleanCode\ArgumentMarshaler;
 use CleanCode\ErrorCodeEnum;
-use CleanCode\Exceptions\ArgsException;
+use CleanCode\ArgsException;
 
 class StringArgumentMarshaler implements ArgumentMarshaler
 {

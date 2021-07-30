@@ -2,8 +2,6 @@
 
 namespace CleanCode;
 
-use CleanCode\Exceptions\ArgsException;
-
 interface ArgumentMarshaler
 {
     /**

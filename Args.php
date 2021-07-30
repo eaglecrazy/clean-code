@@ -6,8 +6,6 @@ use CleanCode\ArgumentMarshaler\BooleanArgumentMarshaler;
 use CleanCode\ArgumentMarshaler\DoubleArgumentMarshaler;
 use CleanCode\ArgumentMarshaler\IntegerArgumentMarshaler;
 use CleanCode\ArgumentMarshaler\StringArgumentMarshaler;
-use CleanCode\Exceptions\ArgsException;
-use CleanCode\Exceptions\ParseException;
 use Exception;
 
 /**
@@ -33,7 +31,7 @@ class Args
     /**
      * @param string $schema
      * @param array $args
-     * @throws ParseException
+     * @throws ArgsException
      */
     public function __construct(string $schema, array $args)
     {
@@ -47,7 +45,7 @@ class Args
      * Analyze the schema and arguments.
      *
      * @return bool
-     * @throws ParseException
+     * @throws ArgsException
      */
     private function parse(): bool
     {
@@ -70,7 +68,7 @@ class Args
     /**
      * Analyze the schema.
      *
-     * @throws ParseException
+     * @throws ArgsException
      */
     private function parseSchema(): void
     {
@@ -88,7 +86,7 @@ class Args
      *  Analyze the element of schema.
      *
      * @param string $element
-     * @throws ParseException
+     * @throws ArgsException
      */
     private function parseSchemaElement(string $element): void
     {
@@ -107,7 +105,7 @@ class Args
         } else if ($elementTail === self::DOUBLE_KEY_END) {
             $this->marshalers[$elementId] = new DoubleArgumentMarshaler();
         } else {
-            throw new ParseException("Unknown element:" . $elementId . " in schema: " . $this->schema, 0);
+            throw new ArgsException(ErrorCodeEnum::SCHEMA_UNKNOWN_ELEMENT(), $elementId);
         }
     }
 
@@ -115,12 +113,12 @@ class Args
      * Validate schema element.
      *
      * @param string $elementId
-     * @throws ParseException
+     * @throws ArgsException
      */
     private function validateSchemaElementId(string $elementId): void
     {
         if (!ctype_alpha($elementId)) {
-            throw new ParseException("Bad character:" . $elementId . " in schema: " . $this->schema, 0);
+            throw new ArgsException(ErrorCodeEnum::SCHEMA_BAD_CHARACTER(), $elementId);
         }
     }
 

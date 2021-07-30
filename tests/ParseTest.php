@@ -1,7 +1,7 @@
-<?php /** @noinspection ALL */
+<?php
 
 use CleanCode\Args;
-use CleanCode\Exceptions\ParseException;
+use CleanCode\ArgsException;
 use PHPUnit\Framework\TestCase;
 
 class ParseTest extends TestCase
@@ -103,14 +103,13 @@ class ParseTest extends TestCase
 
     public function testParseUnknownElement()
     {
-        self::expectException(ParseException::class);
+        self::expectException(ArgsException::class);
         new Args('l?', ['-l']);
     }
 
     public function testParseBadCharacter()
     {
-        self::expectException(ParseException::class);
+        self::expectException(ArgsException::class);
         new Args('??', ['-l']);
     }
 }
-

@@ -1,6 +1,6 @@
 <?php
 
-namespace CleanCode\Exceptions;
+namespace CleanCode;
 
 use Exception;
 use MyCLabs\Enum\Enum;
