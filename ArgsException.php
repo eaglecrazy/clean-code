@@ -18,13 +18,27 @@ class ArgsException extends Exception
         parent::__construct();
     }
 
-    public function getErrorCode()
+    public function getErrorMessage()
     {
-        return $this->errorCode;
-    }
+        $newer = 'This cannot be, because this can never be!!!';
 
-    public function getArgument()
-    {
-        return $this->argument;
+        switch ($this->errorCode) {
+            case ErrorCodeEnum::MISSING_STRING() :
+                return 'Could not find string parameter for ' . $this->argument . '.' . PHP_EOL;
+            case ErrorCodeEnum::MISSING_INTEGER() :
+                return 'Could not find integer parameter for ' . $this->argument . '.' . PHP_EOL;
+            case ErrorCodeEnum::INVALID_INTEGER() :
+                return 'Invalid integer parameter: ' . $this->argument . '.' . PHP_EOL;
+            case ErrorCodeEnum::MISSING_DOUBLE() :
+                return 'Could not find double parameter for ' . $this->argument . '.' . PHP_EOL;
+            case ErrorCodeEnum::INVALID_DOUBLE() :
+                return 'Invalid double parameter: ' . $this->argument . '.' . PHP_EOL;
+            case ErrorCodeEnum::UNEXPECTED_ARGUMENT() :
+                return 'Argument "' . $this->argument . '" unexpected.' . PHP_EOL;
+            case ErrorCodeEnum::OK() :
+                throw new Exception($newer);
+            default :
+                throw new Exception($newer);
+        }
     }
 }

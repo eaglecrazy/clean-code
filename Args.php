@@ -222,34 +222,10 @@ class Args
     public function errorMessage(): string
     {
         $message = '';
-        $newer = 'This cannot be, because this can never be!!!';
 
         /** @var ArgsException $error */
         foreach ($this->argumentsParseErrors as $error) {
-            switch ($error->getErrorCode()) {
-                case ErrorCodeEnum::MISSING_STRING() :
-                    $message .= 'Could not find string parameter for ' . $error->getArgument() . '.' . PHP_EOL;
-                    break;
-                case ErrorCodeEnum::MISSING_INTEGER() :
-                    $message .= 'Could not find integer parameter for ' . $error->getArgument() . '.' . PHP_EOL;
-                    break;
-                case ErrorCodeEnum::INVALID_INTEGER() :
-                    $message .= 'Invalid integer parameter: ' . $error->getArgument() . '.' . PHP_EOL;
-                    break;
-                case ErrorCodeEnum::MISSING_DOUBLE() :
-                    $message .= 'Could not find double parameter for ' . $error->getArgument() . '.' . PHP_EOL;
-                    break;
-                case ErrorCodeEnum::INVALID_DOUBLE() :
-                    $message .= 'Invalid double parameter: ' . $error->getArgument() . '.' . PHP_EOL;
-                    break;
-                case ErrorCodeEnum::UNEXPECTED_ARGUMENT() :
-                    $message .= 'Argument "' . $error->getArgument() . '" unexpected.' . PHP_EOL;
-                    break;
-                case ErrorCodeEnum::OK() :
-                    throw new Exception($newer);
-                default :
-                    throw new Exception($newer);
-            }
+            $message .= $error->getErrorMessage();
         }
 
         return $message;
