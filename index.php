@@ -13,17 +13,18 @@ require 'vendor/autoload.php';
 
 try {
     //Unfortunately uncle Bob did not specify the format of the arguments in the book, so i use this format.
-    $args = ['-l', '-p80', '-d/tmp'];
+    $args = ['-l', '-p80', '-d/tmp', '-f3.14'];
 
-    $schema = 'l,p#,d*';
+    $schema = 'l,p#,d*,f##';
 
     $arg = new Args($schema, $args);
 
     $directory = $arg->getString('d');
     $logging = $arg->getBoolean('l');
     $port = $arg->getInt('p');
+    $double = $arg->getDouble('f');
 
-    executeApplication($logging, $port, $directory);
+    executeApplication($logging, $port, $directory, $double);
 } catch (Exception $e) {
     echo 'Argument error: ' . $e->getMessage();
 }
@@ -34,10 +35,12 @@ try {
  * @param bool $logging
  * @param int $port
  * @param string $directory
+ * @param float $double
  */
-function executeApplication(bool $logging = true, int $port = 0, string $directory = '/tmp'): void
+function executeApplication(bool $logging, int $port, string $directory, float $double): void
 {
     echo 'logging = ' . ($logging ? 'true' : 'false') . PHP_EOL;
     echo 'port = ' . $port . PHP_EOL;
     echo 'directory = ' . $directory . PHP_EOL;
+    echo 'double = ' . $double . PHP_EOL;
 }

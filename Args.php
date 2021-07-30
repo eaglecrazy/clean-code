@@ -15,10 +15,6 @@ use Exception;
  */
 class Args
 {
-    private const STRING_KEY_END = '*';
-    private const INTEGER_KEY_END = '#';
-    private const DOUBLE_KEY_END = '##';
-
     private string $schema;
     private array $args;
     private bool $valid = true;
@@ -77,48 +73,11 @@ class Args
         foreach ($schema as $element) {
             if (strlen($element)) {
                 $trimmedElement = trim($element);
-                $this->parseSchemaElement($trimmedElement);
+
+                $marshaler = MarshalerProvider::getMarshaler($trimmedElement);
+
+                $this->marshalers[$trimmedElement[0]] = $marshaler;
             }
-        }
-    }
-
-    /**
-     *  Analyze the element of schema.
-     *
-     * @param string $element
-     * @throws ArgsException
-     */
-    private function parseSchemaElement(string $element): void
-    {
-        $elementId = $element[0];
-
-        $this->validateSchemaElementId($elementId);
-
-        $elementTail = substr($element, 1);
-
-        if ($elementTail === '') {
-            $this->marshalers[$elementId] = new BooleanArgumentMarshaler();
-        } else if ($elementTail === self::STRING_KEY_END) {
-            $this->marshalers[$elementId] = new StringArgumentMarshaler();
-        } else if ($elementTail === self::INTEGER_KEY_END) {
-            $this->marshalers[$elementId] = new IntegerArgumentMarshaler();
-        } else if ($elementTail === self::DOUBLE_KEY_END) {
-            $this->marshalers[$elementId] = new DoubleArgumentMarshaler();
-        } else {
-            throw new ArgsException(ErrorCodeEnum::SCHEMA_UNKNOWN_ELEMENT(), $elementId);
-        }
-    }
-
-    /**
-     * Validate schema element.
-     *
-     * @param string $elementId
-     * @throws ArgsException
-     */
-    private function validateSchemaElementId(string $elementId): void
-    {
-        if (!ctype_alpha($elementId)) {
-            throw new ArgsException(ErrorCodeEnum::SCHEMA_BAD_CHARACTER(), $elementId);
         }
     }
 
