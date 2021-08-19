@@ -1,10 +1,10 @@
 <?php
 
-namespace CleanCode\ArgumentMarshaler;
+namespace CleanCode\Chapter14\ArgumentMarshaler;
 
-use CleanCode\ArgumentMarshaler;
-use CleanCode\ErrorCodeEnum;
-use CleanCode\ArgsException;
+use CleanCode\Chapter14\ArgumentMarshaler;
+use CleanCode\Chapter14\ErrorCodeEnum;
+use CleanCode\Chapter14\ArgsException;
 
 class DoubleArgumentMarshaler implements ArgumentMarshaler
 {

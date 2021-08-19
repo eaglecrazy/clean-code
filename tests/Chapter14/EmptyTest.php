@@ -1,6 +1,8 @@
 <?php
 
-use CleanCode\Args;
+namespace Chapter14;
+
+use CleanCode\Chapter14\Args;
 use PHPUnit\Framework\TestCase;
 
 class EmptyTest extends TestCase

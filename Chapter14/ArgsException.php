@@ -1,6 +1,6 @@
 <?php
 
-namespace CleanCode;
+namespace CleanCode\Chapter14;
 
 use Exception;
 use MyCLabs\Enum\Enum;
@@ -18,7 +18,7 @@ class ArgsException extends Exception
         parent::__construct();
     }
 
-    public function getErrorMessage()
+    public function getErrorMessage(): string
     {
         $newer = 'This cannot be, because this can never be!!!';
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace CleanCode\ArgumentMarshaler;
+namespace CleanCode\Chapter14\ArgumentMarshaler;
 
-use CleanCode\ArgumentMarshaler;
+use CleanCode\Chapter14\ArgumentMarshaler;
 
 class BooleanArgumentMarshaler implements ArgumentMarshaler
 {

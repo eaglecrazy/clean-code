@@ -1,6 +1,6 @@
 <?php
 
-namespace CleanCode;
+namespace CleanCode\Chapter14;
 
 use MyCLabs\Enum\Enum;
 

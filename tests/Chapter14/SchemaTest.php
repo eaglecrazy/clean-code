@@ -1,7 +1,9 @@
 <?php
 
-use CleanCode\Args;
-use CleanCode\ArgsException;
+namespace Chapter14;
+
+use CleanCode\Chapter14\Args;
+use CleanCode\Chapter14\ArgsException;
 use PHPUnit\Framework\TestCase;
 
 class SchemaTest extends TestCase

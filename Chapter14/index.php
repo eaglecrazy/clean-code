@@ -5,11 +5,11 @@
  * Refactoring process.
  */
 
-namespace CleanCode;
+namespace CleanCode\Chapter14;
 
 use Exception;
 
-require 'vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 try {
     //Unfortunately uncle Bob did not specify the format of the arguments in the book, so i use this format.

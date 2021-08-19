@@ -1,11 +1,11 @@
 <?php
 
-namespace CleanCode;
+namespace CleanCode\Chapter14;
 
-use CleanCode\ArgumentMarshaler\BooleanArgumentMarshaler;
-use CleanCode\ArgumentMarshaler\DoubleArgumentMarshaler;
-use CleanCode\ArgumentMarshaler\IntegerArgumentMarshaler;
-use CleanCode\ArgumentMarshaler\StringArgumentMarshaler;
+use CleanCode\Chapter14\ArgumentMarshaler\BooleanArgumentMarshaler;
+use CleanCode\Chapter14\ArgumentMarshaler\DoubleArgumentMarshaler;
+use CleanCode\Chapter14\ArgumentMarshaler\IntegerArgumentMarshaler;
+use CleanCode\Chapter14\ArgumentMarshaler\StringArgumentMarshaler;
 use Exception;
 
 /**
@@ -16,9 +16,7 @@ use Exception;
 class Args
 {
     private string $schema;
-    private array $args;
     private bool $valid = true;
-    private array $unexpectedArguments = [];
     private array $marshalers = [];
     private array $argsFound = [];
     private array $argumentsParseErrors = [];
@@ -32,7 +30,6 @@ class Args
     public function __construct(string $schema, array $args)
     {
         $this->schema = $schema;
-        $this->args = $args;
         $this->argsList = new Iterator($args);
         $this->valid = $this->parse();
     }

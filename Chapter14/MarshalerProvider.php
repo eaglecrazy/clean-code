@@ -1,11 +1,11 @@
 <?php
 
-namespace CleanCode;
+namespace CleanCode\Chapter14;
 
-use CleanCode\ArgumentMarshaler\BooleanArgumentMarshaler;
-use CleanCode\ArgumentMarshaler\DoubleArgumentMarshaler;
-use CleanCode\ArgumentMarshaler\IntegerArgumentMarshaler;
-use CleanCode\ArgumentMarshaler\StringArgumentMarshaler;
+use CleanCode\Chapter14\ArgumentMarshaler\BooleanArgumentMarshaler;
+use CleanCode\Chapter14\ArgumentMarshaler\DoubleArgumentMarshaler;
+use CleanCode\Chapter14\ArgumentMarshaler\IntegerArgumentMarshaler;
+use CleanCode\Chapter14\ArgumentMarshaler\StringArgumentMarshaler;
 
 abstract class MarshalerProvider
 {
