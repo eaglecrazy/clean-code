@@ -13,8 +13,6 @@ class ComparisonCompactor
     private int $contextLength;
     private string $expected;
     private string $actual;
-    private string $compactExpected;
-    private string $compactActual;
     private int $prefixLength;
     private int $suffixLength;
 
@@ -27,13 +25,17 @@ class ComparisonCompactor
 
     public function formatCompactedComparision(string $message): string
     {
-        if ($this->canBeCompacted()) {
-            $this->compactExpectedAndActual();
+        $compactExpected = $this->expected;
+        $compactActual = $this->actual;
 
-            return $this->format($message, $this->compactExpected, $this->compactActual);
+        if ($this->shouldBeCompacted()) {
+            $this->findCommonPrefixAndSuffix();
+
+            $compactExpected = $this->compactString($this->expected);
+            $compactActual   = $this->compactString($this->actual);
         }
 
-        return $this->format($message, $this->expected, $this->actual);
+        return $this->format($message, $compactExpected, $compactActual);
     }
 
     private function compactString(string $source): string
@@ -91,18 +93,9 @@ class ComparisonCompactor
         return $message . 'expected:<' . $expected . '> but was:<' . $actual . '>';
     }
 
-    private function canBeCompacted(): bool
+    private function shouldBeCompacted(): bool
     {
         return $this->expected != '' && $this->actual != '' && !$this->areStringsEqual();
-    }
-
-    private function compactExpectedAndActual(): void
-    {
-        $this->findCommonPrefixAndSuffix();
-
-        $this->compactExpected = $this->compactString($this->expected);
-
-        $this->compactActual = $this->compactString($this->actual);
     }
 
     private function findCommonPrefixAndSuffix(): void
