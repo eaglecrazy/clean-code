@@ -95,7 +95,14 @@ class ComparisonCompactor
 
     private function shouldBeCompacted(): bool
     {
-        return $this->expected != '' && $this->actual != '' && !$this->areStringsEqual();
+        return !$this->shouldNotBeCompacted();
+    }
+
+    private function shouldNotBeCompacted(): bool
+    {
+        return $this->expected === ''
+            || $this->actual === ''
+            || $this->areStringsEqual();
     }
 
     private function findCommonPrefixAndSuffix(): void
