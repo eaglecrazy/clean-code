@@ -38,15 +38,11 @@ class ComparisonCompactor
 
     private function compactString(string $source): string
     {
-        $result = self::DELTA_START . substring($source, $this->prefixLength, strlen($source) - $this->suffixLength) . self::DELTA_END;
-
-        if ($this->prefixLength > 0)
-            $result = $this->computeCommonPrefix() . $result;
-
-        if ($this->suffixLength > 0)
-            $result = $result . $this->computeCommonSuffix();
-
-        return $result;
+        return $this->computeCommonPrefix()
+            . self::DELTA_START
+            . substring($source, $this->prefixLength, strlen($source) - $this->suffixLength)
+            . self::DELTA_END
+            . $this->computeCommonSuffix();
     }
 
     private function findCommonPrefix(): void
