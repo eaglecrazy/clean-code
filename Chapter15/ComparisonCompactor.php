@@ -49,7 +49,7 @@ class ComparisonCompactor
         return $result;
     }
 
-    private function findCommonPrefix(): int
+    private function findCommonPrefix(): void
     {
         $end = min(strlen($this->expected), strlen($this->actual));
 
@@ -58,20 +58,7 @@ class ComparisonCompactor
                 break;
         }
 
-        return $prefixIndex;
-    }
-
-    private function findCommonSuffix(): int
-    {
-        $expectedSuffix = strlen($this->expected) - 1;
-        $actualSuffix = strlen($this->actual) - 1;
-
-        for (; $actualSuffix >= $this->prefixIndex && $expectedSuffix >= $this->prefixIndex; $actualSuffix--, $expectedSuffix--) {
-            if ($this->expected[$expectedSuffix] != $this->actual[$actualSuffix])
-                break;
-        }
-
-        return strlen($this->expected) - $expectedSuffix;
+        $this->prefixIndex = $prefixIndex;
     }
 
     private function computeCommonPrefix(): string
@@ -115,11 +102,25 @@ class ComparisonCompactor
 
     private function compactExpectedAndActual(): void
     {
-        $this->prefixIndex = $this->findCommonPrefix();
-        $this->suffixIndex = $this->findCommonSuffix();
+        $this->findCommonPrefixAndSuffix();
 
         $this->compactExpected = $this->compactString($this->expected);
 
         $this->compactActual = $this->compactString($this->actual);
+    }
+
+    private function findCommonPrefixAndSuffix(): void
+    {
+        $this->findCommonPrefix();
+
+        $expectedSuffix = strlen($this->expected) - 1;
+        $actualSuffix = strlen($this->actual) - 1;
+
+        for (; $actualSuffix >= $this->prefixIndex && $expectedSuffix >= $this->prefixIndex; $actualSuffix--, $expectedSuffix--) {
+            if ($this->expected[$expectedSuffix] != $this->actual[$actualSuffix])
+                break;
+        }
+
+        $this->suffixIndex = strlen($this->expected) - $expectedSuffix;
     }
 }
