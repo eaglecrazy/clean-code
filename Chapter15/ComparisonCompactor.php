@@ -16,7 +16,7 @@ class ComparisonCompactor
     private string $compactExpected;
     private string $compactActual;
     private int $prefixLength;
-    private int $suffixIndex;
+    private int $suffixLength;
 
     public function __construct(int $contextLength, string $expected, string $actual)
     {
@@ -38,12 +38,12 @@ class ComparisonCompactor
 
     private function compactString(string $source): string
     {
-        $result = self::DELTA_START . substring($source, $this->prefixLength, strlen($source) - $this->suffixIndex + 1) . self::DELTA_END;
+        $result = self::DELTA_START . substring($source, $this->prefixLength, strlen($source) - $this->suffixLength) . self::DELTA_END;
 
         if ($this->prefixLength > 0)
             $result = $this->computeCommonPrefix() . $result;
 
-        if ($this->suffixIndex > 0)
+        if ($this->suffixLength > 0)
             $result = $result . $this->computeCommonSuffix();
 
         return $result;
@@ -73,13 +73,13 @@ class ComparisonCompactor
 
     private function computeCommonSuffix(): string
     {
-        $end = min(strlen($this->expected) - $this->suffixIndex + 1 + $this->contextLength, strlen($this->expected));
+        $end = min(strlen($this->expected) - $this->suffixLength + $this->contextLength, strlen($this->expected));
 
         return substring(
                 $this->expected,
-                strlen($this->expected) - $this->suffixIndex + 1,
+                strlen($this->expected) - $this->suffixLength,
                 $end)
-            . (strlen($this->expected) - $this->suffixIndex + 1 < strlen($this->expected) - $this->contextLength ? static::ELLIPSIS : "");
+            . (strlen($this->expected) - $this->suffixLength < strlen($this->expected) - $this->contextLength ? static::ELLIPSIS : "");
 
     }
 
@@ -113,24 +113,24 @@ class ComparisonCompactor
     {
         $this->findCommonPrefix();
 
-        $suffixLength = 1;
+        $suffixLength = 0;
 
         for (; !$this->suffixOverlapsPrefix($suffixLength); $suffixLength++) {
             if ($this->charFromEnd($this->expected, $suffixLength) != $this->charFromEnd($this->actual, $suffixLength))
                 break;
         }
 
-        $this->suffixIndex = $suffixLength;
+        $this->suffixLength = $suffixLength;
     }
 
     private function charFromEnd(string $s, int $i): string
     {
-        return $s[(strlen($s) - $i)];
+        return $s[(strlen($s) - $i - 1)];
     }
 
     private function suffixOverlapsPrefix(int $suffixLength): bool
     {
-        return strlen($this->actual) - $suffixLength < $this->prefixLength
-            || strlen($this->expected) - $suffixLength < $this->prefixLength;
+        return strlen($this->actual) - $suffixLength <= $this->prefixLength
+            || strlen($this->expected) - $suffixLength <= $this->prefixLength;
     }
 }
