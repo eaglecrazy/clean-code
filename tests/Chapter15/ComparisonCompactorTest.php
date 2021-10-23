@@ -16,7 +16,6 @@ class ComparisonCompactorTest extends TestCase
     public function testStartSame()
     {
         $failure = (new ComparisonCompactor(1, "ba", "bc"))->formatCompactedComparision('');
-        echo 'failure = "' . $failure . '"' . PHP_EOL;
         self::assertEquals("expected:<b[a]> but was:<b[c]>", $failure);
     }
 
@@ -59,7 +58,6 @@ class ComparisonCompactorTest extends TestCase
     public function testComparisonErrorEndSameComplete()
     {
         $failure = (new ComparisonCompactor(0, "bc", "abc"))->formatCompactedComparision('');
-        echo $failure . PHP_EOL;
         self::assertEquals("expected:<[]...> but was:<[a]...>", $failure);
     }
 

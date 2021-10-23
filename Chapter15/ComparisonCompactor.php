@@ -2,7 +2,7 @@
 
 namespace CleanCode\Chapter15;
 
-include('../../java_functions.php');
+include(__DIR__ . '/../java_functions.php');
 
 class ComparisonCompactor
 {
@@ -109,14 +109,13 @@ class ComparisonCompactor
     {
         $this->findCommonPrefix();
 
-        $suffixLength = 0;
-
-        for (; !$this->suffixOverlapsPrefix($suffixLength); $suffixLength++) {
-            if ($this->charFromEnd($this->expected, $suffixLength) != $this->charFromEnd($this->actual, $suffixLength))
+        for ($this->suffixLength = 0; !$this->suffixOverlapsPrefix(); $this->suffixLength++) {
+            if (
+                $this->charFromEnd($this->expected, $this->suffixLength)
+                != $this->charFromEnd($this->actual, $this->suffixLength)
+            )
                 break;
         }
-
-        $this->suffixLength = $suffixLength;
     }
 
     private function charFromEnd(string $s, int $i): string
@@ -124,9 +123,9 @@ class ComparisonCompactor
         return $s[(strlen($s) - $i - 1)];
     }
 
-    private function suffixOverlapsPrefix(int $suffixLength): bool
+    private function suffixOverlapsPrefix(): bool
     {
-        return strlen($this->actual) - $suffixLength <= $this->prefixLength
-            || strlen($this->expected) - $suffixLength <= $this->prefixLength;
+        return strlen($this->actual) - $this->suffixLength <= $this->prefixLength
+            || strlen($this->expected) - $this->suffixLength <= $this->prefixLength;
     }
 }
