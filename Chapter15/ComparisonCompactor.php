@@ -51,12 +51,10 @@ class ComparisonCompactor
     {
         $end = min(strlen($this->expected), strlen($this->actual));
 
-        for ($prefixIndex = 0; $prefixIndex < $end; $prefixIndex++) {
-            if ($this->expected[$prefixIndex] != $this->actual[$prefixIndex])
+        for ($this->prefixLength = 0; $this->prefixLength < $end; $this->prefixLength++) {
+            if ($this->expected[$this->prefixLength] != $this->actual[$this->prefixLength])
                 break;
         }
-
-        $this->prefixLength = $prefixIndex;
     }
 
     private function computeCommonPrefix(): string
