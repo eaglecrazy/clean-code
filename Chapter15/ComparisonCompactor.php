@@ -31,20 +31,22 @@ class ComparisonCompactor
         if ($this->shouldBeCompacted()) {
             $this->findCommonPrefixAndSuffix();
 
-            $compactExpected = $this->compactString($this->expected);
-            $compactActual   = $this->compactString($this->actual);
+            $compactExpected = $this->compact($this->expected);
+            $compactActual   = $this->compact($this->actual);
         }
 
         return $this->format($message, $compactExpected, $compactActual);
     }
 
-    private function compactString(string $source): string
+    private function compact(string $s): string
     {
-        return $this->computeCommonPrefix()
+        return $this->startingEllipsis()
+            . $this->startingContext()
             . self::DELTA_START
-            . substring($source, $this->prefixLength, strlen($source) - $this->suffixLength)
+            . $this->delta($s)
             . self::DELTA_END
-            . $this->computeCommonSuffix();
+            . $this->endingContext()
+            . $this->endingEllipsis();
     }
 
     private function findCommonPrefix(): void
@@ -55,28 +57,6 @@ class ComparisonCompactor
             if ($this->expected[$this->prefixLength] != $this->actual[$this->prefixLength])
                 break;
         }
-    }
-
-    private function computeCommonPrefix(): string
-    {
-        return ($this->prefixLength > $this->contextLength ? self::ELLIPSIS : "")
-            . substring(
-                $this->expected,
-                max(0, $this->prefixLength - $this->contextLength),
-                $this->prefixLength
-            );
-    }
-
-    private function computeCommonSuffix(): string
-    {
-        $end = min(strlen($this->expected) - $this->suffixLength + $this->contextLength, strlen($this->expected));
-
-        return substring(
-                $this->expected,
-                strlen($this->expected) - $this->suffixLength,
-                $end)
-            . (strlen($this->expected) - $this->suffixLength < strlen($this->expected) - $this->contextLength ? static::ELLIPSIS : "");
-
     }
 
     private function areStringsEqual(): bool
@@ -125,5 +105,39 @@ class ComparisonCompactor
     {
         return strlen($this->actual) - $this->suffixLength <= $this->prefixLength
             || strlen($this->expected) - $this->suffixLength <= $this->prefixLength;
+    }
+
+    private function startingEllipsis(): string
+    {
+        return $this->prefixLength > $this->contextLength ? self::ELLIPSIS : '';
+    }
+
+    private function startingContext(): string
+    {
+        $contextStart = max(0, $this->prefixLength - $this->contextLength);
+        $contextEnd = $this->prefixLength;
+
+        return substring($this->expected, $contextStart, $contextEnd);
+    }
+
+    private function delta(string $s): string
+    {
+        $deltaStart = $this->prefixLength;
+        $deltaEnd = strlen($s) - $this->suffixLength;
+
+        return substring($s, $deltaStart, $deltaEnd);
+    }
+
+    private function endingContext(): string
+    {
+        $contextStart = strlen($this->expected) - $this->suffixLength;
+        $contextEnd = min($contextStart + $this->contextLength, strlen($this->expected));
+
+        return substring($this->expected, $contextStart, $contextEnd);
+    }
+
+    private function endingEllipsis(): string
+    {
+        return $this->suffixLength > $this->contextLength ? self::ELLIPSIS : '';
     }
 }
